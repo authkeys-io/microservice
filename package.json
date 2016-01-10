@@ -1,0 +1,33 @@
+{
+  "name": "fuzzy.io-microservice",
+  "version": "0.1.0",
+  "description": "Simple microservice class used by Fuzzy.io",
+  "homepage": "http://github.com/fuzzy-io/microservice",
+  "bugs": "https://github.com/fuzzy-io/microservice/issues",
+  "license": "Apache-2.0",
+  "main": "lib/fuzzy.io.js",
+  "scripts": {
+    "test": "cake test",
+    "build": "cake build",
+    "prepublish": "cake build",
+    "clean": "cake clean",
+    "install": "mkdir -p lib/ && coffee -b -c -o lib/ src/*.coffee"
+  },
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "async": "^1.5.2",
+    "express": "^4.13.3",
+    "body-parser": "^1.14.2",
+    "databank": "^0.19.1",
+    "node-uuid": "^1.4.7",
+    "bunyan": "^1.5.1"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.10.0",
+    "vows": "^0.8.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/fuzzy-io/microservice.git"
+  }
+}
