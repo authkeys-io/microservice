@@ -18,6 +18,11 @@ class Microservice
 
   constructor: (environment) ->
 
+    # Default to process.env
+
+    if !environment?
+      environment = process.env
+
     @config = @environmentToConfig environment
     @express = @setupExpress()
     @srv = null
@@ -195,12 +200,12 @@ class Microservice
   environmentToConfig: (environment) ->
 
     config =
-      port: if process.env['PORT'] then parseInt(process.env['PORT'], 10) else 80
-      hostname: process.env['HOSTNAME']
-      address: process.env['ADDRESS'] || '0.0.0.0'
-      key: process.env['KEY']
-      cert: process.env['CERT']
-      logLevel: process.env['LOG_LEVEL'] || 'info'
+      port: if environment['PORT'] then parseInt(environment['PORT'], 10) else 80
+      hostname: environment['HOSTNAME']
+      address: environment['ADDRESS'] || '0.0.0.0'
+      key: environment['KEY']
+      cert: environment['CERT']
+      logLevel: environment['LOG_LEVEL'] || 'info'
       appKeys: {}
 
     for name, value of environment
