@@ -5,7 +5,7 @@
   "homepage": "http://github.com/fuzzy-io/microservice",
   "bugs": "https://github.com/fuzzy-io/microservice/issues",
   "license": "Apache-2.0",
-  "main": "lib/fuzzy.io.js",
+  "main": "lib/microservice.js",
   "scripts": {
     "test": "cake test",
     "build": "cake build",
