@@ -24,14 +24,15 @@ class WidgetService extends Microservice
 
     exp.get '/version', (req, res, next) ->
       res.json {name: "widget", version: "0.1.0"}
-    exp.post '/widget', (req, res, next) ->
+
+    exp.post '/widget', @appAuthc, (req, res, next) ->
       Widget.create req.body, (err, widget) ->
         if err
           next err
         else
           res.json widget
 
-    exp.get '/widget', (req, res, next) ->
+    exp.get '/widget', @appAuthc, (req, res, next) ->
       allWidgets = []
       addWidget = (widget) ->
         allWidgets.push widget
@@ -41,7 +42,7 @@ class WidgetService extends Microservice
         else
           res.json allWidgets
 
-    exp.param 'id', (req, res, next, id) ->
+    exp.param 'id', @appAuthc, (req, res, next, id) ->
       Widget.get id, (err, widget) ->
         if err
           next err
@@ -49,20 +50,20 @@ class WidgetService extends Microservice
           req.widget = widget
           next()
 
-    exp.get '/widget/:id', (req, res, next) ->
+    exp.get '/widget/:id', @appAuthc, (req, res, next) ->
       res.json req.widget
 
-    exp.put '/widget/:id', (req, res, next) ->
+    exp.put '/widget/:id', @appAuthc, (req, res, next) ->
 
-    exp.patch '/widget/:id', (req, res, next) ->
+    exp.patch '/widget/:id', @appAuthc, (req, res, next) ->
       _.extend req.widget, req.body
       req.widget.save (err, saved) ->
         if err
           next err
         else
-          req.json saved
+          res.json saved
 
-    exp.delete '/widget/:id', (req, res, next) ->
+    exp.delete '/widget/:id', @appAuthc, (req, res, next) ->
       req.widget.del (err) ->
         if err
           next err

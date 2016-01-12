@@ -172,7 +172,7 @@ class Microservice
         next()
       else
         req.log.warn {tokenString: tokenString, appKeys: appKeys}, "Unauthorized token string"
-        next new HTTPError("Unauthorized token string", 401)
+        next new HTTPError("Unauthorized token string", 403)
 
   setupExpress: () ->
 
@@ -212,6 +212,8 @@ class Microservice
       res.json {message: err.message}
 
     @setupRoutes exp
+
+    exp.config = @config
 
     exp
 
