@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+_ = require 'lodash'
 vows = require 'vows'
 assert = require 'assert'
 request = require 'request'
@@ -54,19 +55,12 @@ vows
         'and we start the service':
           topic: (service) ->
             callback = @callback
-            try
-              service.start (err) ->
-                process.stderr.write "GOT HERE"
-                if err
-                  callback err
-                else
-                  callback null
-            catch err
-              process.stderr.write "GOT HERE INSTEAD\n"
-              process.stderr.write JSON.stringify(err)
-              callback err
+            service.start (err) ->
+              if err
+                callback err
+              else
+                callback null
             undefined
           'it works': (err) ->
-            process.stderr.write JSON.stringify(err)
             assert.ifError err
   .export(module)
