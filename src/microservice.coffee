@@ -105,7 +105,7 @@ class Microservice
 
     undefined
 
-  stopNetwork: (callback) =>
+  stopNetwork: (callback) ->
 
     @srv.once 'close', () =>
       callback null
@@ -116,7 +116,7 @@ class Microservice
     @srv.close()
     @srv = undefined
 
-  stopDatabase: (callback) =>
+  stopDatabase: (callback) ->
 
     @db.disconnect callback
     @db = undefined
