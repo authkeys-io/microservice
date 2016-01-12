@@ -1,4 +1,16 @@
-# Copyright 2016 Fuzzy.io. All rights reserved.
+# Copyright 2016 Fuzzy.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 http = require 'http'
 https = require 'https'
@@ -7,12 +19,14 @@ _ = require 'lodash'
 async = require 'async'
 express = require 'express'
 bodyParser = require 'body-parser'
-db = require 'databank'
+{Databank, DatabankObject} = require 'databank'
 Logger = require 'bunyan'
 uuid = require 'node-uuid'
 
-Databank = db.Databank
-DatabankObject = db.DatabankObject
+HTTPError = require './httperror'
+
+psw = (str) ->
+  process.stderr.write str + "\n"
 
 class Microservice
 
@@ -35,7 +49,11 @@ class Microservice
         @startDatabase callback
       (callback) =>
         @startNetwork callback
-    ], callback
+    ], (err) ->
+      if err
+        callback err
+      else
+        callback null
 
   stop: (callback) ->
 
@@ -46,9 +64,12 @@ class Microservice
         @stopDatabase callback
     ], callback
 
-  startDatabase: (callback) =>
+  startDatabase: (callback) ->
 
-    @config.params.schema = @setupSchema()
+    if !@config.driver?
+      return callback new Error("No databank driver configured")
+
+    @config.params.schema = @getSchema()
 
     @db = Databank.get @config.driver, @config.params
 
@@ -62,7 +83,7 @@ class Microservice
         DatabankObject.bank = @db
         callback null
 
-  startNetwork: (callback) =>
+  startNetwork: (callback) ->
 
     if @config.key
       options =
@@ -206,6 +227,9 @@ class Microservice
       key: environment['KEY']
       cert: environment['CERT']
       logLevel: environment['LOG_LEVEL'] || 'info'
+      logFile: environment['LOG_FILE'] || null
+      driver: environment['DRIVER']
+      params: if environment['PARAMS'] then JSON.parse(environment['PARAMS']) else {}
       appKeys: {}
 
     for name, value of environment
