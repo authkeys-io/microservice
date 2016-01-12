@@ -34,6 +34,7 @@ vows
               PORT: "2342"
               HOSTNAME: "localhost"
               DRIVER: "memory"
+              LOG_FILE: "/dev/null"
             service = new WidgetService env
             callback null, service
           catch err
@@ -63,4 +64,46 @@ vows
             undefined
           'it works': (err) ->
             assert.ifError err
+          'and we request the version':
+            topic: () ->
+              callback = @callback
+              url = 'http://localhost:2342/version'
+              request.get url, (err, response, body) ->
+                if err
+                  callback err
+                else if response.statusCode != 200
+                  callback new Error("Bad status code #{response.statusCode}")
+                else
+                  body = JSON.parse body
+                  callback null, body
+              undefined
+            'it works': (err, version) ->
+              assert.ifError err
+            'it looks correct': (err, version) ->
+              assert.ifError err
+              assert.include version, "version"
+              assert.include version, "name"
+            'and we stop the server':
+              topic: (version, server) ->
+                callback = @callback
+                server.stop (err) ->
+                  if err
+                    callback err
+                  else
+                    callback null
+                undefined
+              'it works': (err) ->
+                assert.ifError err
+              'and we request the version':
+                topic: ->
+                  callback = @callback
+                  url = 'http://localhost:2342/version'
+                  request.get url, (err, response, body) ->
+                    if err
+                      callback null
+                    else
+                      callback new Error("Unexpected success after server stop")
+                  undefined
+                'it fails correctly': (err) ->
+                  assert.ifError err
   .export(module)

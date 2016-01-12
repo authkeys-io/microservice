@@ -134,10 +134,10 @@ class Microservice
         req: Logger.stdSerializers.req
         res: Logger.stdSerializers.res
         err: Logger.stdSerializers.err
-      level: @config.loglevel
+      level: @config.logLevel
 
-    if @config.logfile
-        logParams.streams = [{path: @config.logfile}]
+    if @config.logFile
+        logParams.streams = [{path: @config.logFile}]
     else
         logParams.streams = [{stream: process.stderr}]
 

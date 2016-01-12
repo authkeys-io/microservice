@@ -22,6 +22,8 @@ class WidgetService extends Microservice
 
   setupRoutes: (exp) ->
 
+    exp.get '/version', (req, res, next) ->
+      res.json {name: "widget", version: "0.1.0"}
     exp.post '/widget', (req, res, next) ->
       Widget.create req.body, (err, widget) ->
         if err
