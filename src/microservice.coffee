@@ -66,10 +66,18 @@ class Microservice
 
   startDatabase: (callback) ->
 
-    if !@config.driver?
+    if !_.isString(@config.driver)
       return callback new Error("No databank driver configured")
 
-    @config.params.schema = @getSchema()
+    if !_.isObject(@config.params)
+      return callback new Error("No databank params configured")
+
+    schema = @getSchema()
+
+    if !_.isObject(schema)
+      return callback new Error("No schema defined for this microservice class")
+
+    @config.params.schema = schema
 
     @db = Databank.get @config.driver, @config.params
 
@@ -126,7 +134,7 @@ class Microservice
     "microservice"
 
   getSchema: () ->
-    {}
+    null
 
   setupLogger: () ->
     logParams =
