@@ -158,21 +158,9 @@ class Microservice
     log
 
   appAuthc: (req, res, next) ->
-    bearerToken = (req, callback) ->
-      authorization = req.headers.authorization
-      if !authorization?
-        callback new HTTPError("No Authorization header", 401)
-      else
-        m = /^[Bb]earer\s+(\w+)$/.exec authorization
-        if !m?
-          callback new HTTPError("Authorization header should be like 'Bearer <token>'", 400)
-        else
-          tokenString = m[1]
-          callback null, tokenString
-
     appKeys = req.app.config.appKeys
 
-    bearerToken req, (err, tokenString) ->
+    Microservice::bearerToken req, (err, tokenString) ->
       if err
         next err
       else if appKeys[tokenString]?
@@ -181,6 +169,19 @@ class Microservice
       else
         req.log.warn {tokenString: tokenString, appKeys: appKeys}, "Unauthorized token string"
         next new HTTPError("Unauthorized token string", 403)
+
+  bearerToken: (req, callback) ->
+    authorization = req.headers.authorization
+    if !authorization?
+      callback new HTTPError("No Authorization header", 401)
+    else
+      m = /^[Bb]earer\s+(\w+)$/.exec authorization
+      if !m?
+        callback new HTTPError("Authorization header should be like 'Bearer <token>'", 400)
+      else
+        tokenString = m[1]
+        callback null, tokenString
+
 
   setupExpress: () ->
 
