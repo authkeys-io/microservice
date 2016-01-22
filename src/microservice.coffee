@@ -22,6 +22,7 @@ bodyParser = require 'body-parser'
 {Databank, DatabankObject} = require 'databank'
 Logger = require 'bunyan'
 uuid = require 'node-uuid'
+request = require 'request'
 
 HTTPError = require './httperror'
 
@@ -207,21 +208,35 @@ class Microservice
     exp.use requestLogger
     exp.use bodyParser.json()
 
-    # Error handler
+    exp.config = @config
+    exp.config.name = @getName()
 
+    @setupRoutes exp
+
+    # Error handler
     exp.use (err, req, res, next) ->
+      config = req.app.config
+
       if err.name == "NoSuchThingError"
         res.statusCode = 404
       else
         res.statusCode = err.statusCode or 500
       if req.log
         req.log.error {err: err}, "Error"
+      if config.stripeHook
+        options =
+          url: config.stripeHook
+          headers:
+            "Content-Type": "application/json"
+          json:
+            text: "#{config.name}/#{config.hostname} #{err.name}: #{err.message}."
+            username: "microservice"
+            icon_emoji: ":bomb:"
+        request.post options, (err, response, body) ->
+          if err
+            console.error err
       res.setHeader "Content-Type", "application/json"
-      res.json {message: err.message}
-
-    @setupRoutes exp
-
-    exp.config = @config
+      res.json {status: 'error', message: err.message, }
 
     exp
 
@@ -238,6 +253,7 @@ class Microservice
       cert: environment['CERT']
       logLevel: environment['LOG_LEVEL'] || 'info'
       logFile: environment['LOG_FILE'] || null
+      stripeHook: environment['STRIPE_HOOK']
       driver: environment['DRIVER']
       params: if environment['PARAMS'] then JSON.parse(environment['PARAMS']) else {}
       appKeys: {}
