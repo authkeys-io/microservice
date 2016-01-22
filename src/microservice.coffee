@@ -223,9 +223,9 @@ class Microservice
         res.statusCode = err.statusCode or 500
       if req.log
         req.log.error {err: err}, "Error"
-      if config.stripeHook
+      if config.slackHook
         options =
-          url: config.stripeHook
+          url: config.slackHook
           headers:
             "Content-Type": "application/json"
           json:
@@ -253,7 +253,7 @@ class Microservice
       cert: environment['CERT']
       logLevel: environment['LOG_LEVEL'] || 'info'
       logFile: environment['LOG_FILE'] || null
-      stripeHook: environment['STRIPE_HOOK']
+      slackHook: environment['SLACK_HOOK']
       driver: environment['DRIVER']
       params: if environment['PARAMS'] then JSON.parse(environment['PARAMS']) else {}
       appKeys: {}
