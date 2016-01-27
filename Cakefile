@@ -64,7 +64,7 @@ task 'test', 'Run tests', ->
           callback null
         else
           head = list.shift()
-          cmd "vows #{head}", ->
+          cmd "./node_modules/.bin/vows --spec #{head}", ->
             doNext list, callback
       doNext files, () ->
         a = a
