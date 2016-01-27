@@ -42,7 +42,7 @@ class WidgetService extends Microservice
         else
           res.json allWidgets
 
-    exp.param 'id', @appAuthc, (req, res, next, id) ->
+    exp.param 'id', (req, res, next, id) ->
       Widget.get id, (err, widget) ->
         if err
           next err
