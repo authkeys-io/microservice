@@ -22,6 +22,7 @@ bodyParser = require 'body-parser'
 {Databank, DatabankObject} = require 'databank'
 Logger = require 'bunyan'
 uuid = require 'node-uuid'
+request = require 'request'
 
 HTTPError = require './httperror'
 
@@ -158,21 +159,9 @@ class Microservice
     log
 
   appAuthc: (req, res, next) ->
-    bearerToken = (req, callback) ->
-      authorization = req.headers.authorization
-      if !authorization?
-        callback new HTTPError("No Authorization header", 401)
-      else
-        m = /^[Bb]earer\s+(\w+)$/.exec authorization
-        if !m?
-          callback new HTTPError("Authorization header should be like 'Bearer <token>'", 400)
-        else
-          tokenString = m[1]
-          callback null, tokenString
-
     appKeys = req.app.config.appKeys
 
-    bearerToken req, (err, tokenString) ->
+    Microservice::bearerToken req, (err, tokenString) ->
       if err
         next err
       else if appKeys[tokenString]?
@@ -181,6 +170,19 @@ class Microservice
       else
         req.log.warn {tokenString: tokenString, appKeys: appKeys}, "Unauthorized token string"
         next new HTTPError("Unauthorized token string", 403)
+
+  bearerToken: (req, callback) ->
+    authorization = req.headers.authorization
+    if !authorization?
+      callback new HTTPError("No Authorization header", 401)
+    else
+      m = /^[Bb]earer\s+(\w+)$/.exec authorization
+      if !m?
+        callback new HTTPError("Authorization header should be like 'Bearer <token>'", 400)
+      else
+        tokenString = m[1]
+        callback null, tokenString
+
 
   setupExpress: () ->
 
@@ -206,21 +208,35 @@ class Microservice
     exp.use requestLogger
     exp.use bodyParser.json()
 
-    # Error handler
+    exp.config = @config
+    exp.config.name = @getName()
 
+    @setupRoutes exp
+
+    # Error handler
     exp.use (err, req, res, next) ->
+      config = req.app.config
+
       if err.name == "NoSuchThingError"
         res.statusCode = 404
       else
         res.statusCode = err.statusCode or 500
       if req.log
         req.log.error {err: err}, "Error"
+      if config.slackHook
+        options =
+          url: config.slackHook
+          headers:
+            "Content-Type": "application/json"
+          json:
+            text: "#{config.name}/#{config.hostname} #{err.name}: #{err.message}."
+            username: "microservice"
+            icon_emoji: ":bomb:"
+        request.post options, (err, response, body) ->
+          if err
+            console.error err
       res.setHeader "Content-Type", "application/json"
-      res.json {message: err.message}
-
-    @setupRoutes exp
-
-    exp.config = @config
+      res.json {status: 'error', message: err.message, }
 
     exp
 
@@ -237,6 +253,7 @@ class Microservice
       cert: environment['CERT']
       logLevel: environment['LOG_LEVEL'] || 'info'
       logFile: environment['LOG_FILE'] || null
+      slackHook: environment['SLACK_HOOK']
       driver: environment['DRIVER']
       params: if environment['PARAMS'] then JSON.parse(environment['PARAMS']) else {}
       appKeys: {}
