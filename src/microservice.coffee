@@ -198,7 +198,6 @@ class Microservice
         res.end(chunk, encoding)
         rec = {req: req, res: res}
         weblog.info(rec)
-        next()
       next()
 
     exp = express()
