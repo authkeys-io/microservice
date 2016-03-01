@@ -28,7 +28,7 @@ process.on 'uncaughtException', (err) ->
   console.error err
 
 vows
-  .describe('microservice unit test')
+  .describe('test for microservices without a getSchema()')
   .addBatch
     'When we instantiate a microservice without a getSchema() method':
         topic: ->

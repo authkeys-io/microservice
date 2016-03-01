@@ -27,7 +27,7 @@ process.on 'uncaughtException', (err) ->
   process.stderr.write require('util').inspect(err) + "\n"
 
 vows
-  .describe('microservice unit test')
+  .describe('authentication')
   .addBatch
     'When we instantiate a microservice':
         topic: ->

@@ -26,7 +26,7 @@ process.on 'uncaughtException', (err) ->
   console.error err
 
 vows
-  .describe('microservice unit test')
+  .describe('notify')
   .addBatch
     'When we set up a mock Slack server':
       topic: ->

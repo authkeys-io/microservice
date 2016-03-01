@@ -24,7 +24,7 @@ process.on 'uncaughtException', (err) ->
   console.error err
 
 vows
-  .describe('microservice unit test')
+  .describe('microservice basics')
   .addBatch
     'When we instantiate a microservice':
         topic: ->
