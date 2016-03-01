@@ -24,7 +24,7 @@ APP_KEY = "soothlesseecovezqislam"
 BAD_KEY = "thisisabadkey"
 
 process.on 'uncaughtException', (err) ->
-  console.error err
+  process.stderr.write require('util').inspect(err) + "\n"
 
 vows
   .describe('microservice unit test')
@@ -62,7 +62,7 @@ vows
             server.stop (err) ->
               callback null
             undefined
-          'and we request the list of widgets without auth':
+          'and we request the list of widgets without any auth':
             topic: () ->
               callback = @callback
               url = 'http://localhost:2342/widget'
@@ -76,7 +76,7 @@ vows
               undefined
             'it fails correctly': (err) ->
               assert.ifError err
-          'and we request the list of widgets with bad auth':
+          'and we request the list of widgets with bad Authorization header':
             topic: () ->
               callback = @callback
               options =
@@ -93,7 +93,7 @@ vows
               undefined
             'it fails correctly': (err) ->
               assert.ifError err
-          'and we request the list of widgets with auth':
+          'and we request the list of widgets with the Authorization header':
             topic: () ->
               callback = @callback
               options =
@@ -109,10 +109,40 @@ vows
                   results = JSON.parse(body)
                   callback null, results
               undefined
+          'and we request the list of widgets with a good access_token parameter':
+            topic: () ->
+              callback = @callback
+              options =
+                url: "http://localhost:2342/widget?access_token=#{APP_KEY}"
+              request.get options, (err, response, body) ->
+                if err
+                  callback err
+                else if response.statusCode != 200
+                  callback new Error("Unexpected status code #{response.statusCode}")
+                else
+                  results = JSON.parse(body)
+                  callback null, results
+              undefined
             'it works': (err, widgets) ->
               assert.ifError err
             'it is an array': (err, widgets) ->
               assert.ifError err
               assert.isArray widgets
+          'and we request the list of widgets with a bad access_token parameter':
+            topic: () ->
+              callback = @callback
+              options =
+                url: "http://localhost:2342/widget?access_token=#{BAD_KEY}"
+              request.get options, (err, response, body) ->
+                if err
+                  callback err
+                else if response.statusCode != 403
+                  callback new Error("Unexpected status code #{response.statusCode}")
+                else
+                  callback null
+              undefined
+            'it fails correctly': (err) ->
+              assert.ifError err
+
 
   .export(module)

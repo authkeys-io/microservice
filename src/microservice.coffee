@@ -173,16 +173,17 @@ class Microservice
 
   bearerToken: (req, callback) ->
     authorization = req.headers.authorization
-    if !authorization?
-      callback new HTTPError("No Authorization header", 401)
-    else
+    if authorization
       m = /^[Bb]earer\s+(\w+)$/.exec authorization
       if !m?
         callback new HTTPError("Authorization header should be like 'Bearer <token>'", 400)
       else
         tokenString = m[1]
         callback null, tokenString
-
+    else if req.query?.access_token?
+      callback null, req.query?.access_token
+    else
+      callback new HTTPError("Authorization required", 401)
 
   setupExpress: () ->
 
