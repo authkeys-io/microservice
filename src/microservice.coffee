@@ -130,6 +130,12 @@ class Microservice
 
   stopNetwork: (callback) ->
 
+    # If there's no server, no need to do this
+
+    if !@srv?
+      debug("Skipping stopNetwork(); no server")
+      return callback null
+
     onError = (err) =>
       clearListeners()
       @srv = null
@@ -150,6 +156,10 @@ class Microservice
     @srv.close()
 
   stopDatabase: (callback) ->
+
+    if !@db?
+      debug("Skipping stopDatabase(); no database")
+      return callback null
 
     @db.disconnect (err) =>
       @db = undefined

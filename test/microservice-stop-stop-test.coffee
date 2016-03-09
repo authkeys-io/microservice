@@ -48,7 +48,7 @@ vows
           undefined
         'it works': (err, service) ->
           assert.ifError err
-        'and we start and stop the service a few times':
+        'and we start and stop the service':
           topic: (service) ->
             callback = @callback
             async.waterfall [
@@ -56,12 +56,6 @@ vows
                 service.start callback
               (callback) ->
                 service.stop callback
-              (callback) ->
-                service.start callback
-              (callback) ->
-                service.stop callback
-              (callback) ->
-                service.start callback
               (callback) ->
                 service.stop callback
             ], callback
