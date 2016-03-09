@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+util = require 'util'
 http = require 'http'
 https = require 'https'
 
+debug = require('debug')('microservice')
 _ = require 'lodash'
 async = require 'async'
 express = require 'express'
@@ -45,11 +47,13 @@ class Microservice
 
   start: (callback) ->
 
+    mu = @
+
     async.waterfall [
-      (callback) =>
-        @startDatabase callback
-      (callback) =>
-        @startNetwork callback
+      (callback) ->
+        mu.startDatabase callback
+      (callback) ->
+        mu.startNetwork callback
     ], (err) ->
       if err
         callback err
@@ -58,11 +62,13 @@ class Microservice
 
   stop: (callback) ->
 
+    mu = @
+
     async.waterfall [
-      (callback) =>
-        @stopNetwork callback
-      (callback) =>
-        @stopDatabase callback
+      (callback) ->
+        mu.stopNetwork callback
+      (callback) ->
+        mu.stopDatabase callback
     ], callback
 
   startDatabase: (callback) ->
@@ -102,11 +108,19 @@ class Microservice
     else
       @srv = http.createServer(@express)
 
-    @srv.once 'error', (err) ->
+    onError = (err) =>
+      clearListeners()
       callback err
 
-    @srv.once 'listening', () ->
+    onListening = () =>
       callback null
+
+    clearListeners = () =>
+      @srv.removeListener 'error', onError
+      @srv.removeListener 'listening', onListening
+
+    @srv.on 'error', onError
+    @srv.on 'listening', onListening
 
     address = @config.address or @config.hostname
 
@@ -116,20 +130,31 @@ class Microservice
 
   stopNetwork: (callback) ->
 
-    @srv.once 'close', () =>
-      callback null
-
-    @srv.once 'error', (err) ->
+    onError = (err) =>
+      clearListeners()
+      @srv = null
       callback err
 
+    onClose = =>
+      clearListeners()
+      @srv = null
+      callback null
+
+    clearListeners = =>
+      @srv.removeListener 'error', onError
+      @srv.removeListener 'close', onClose
+
+    @srv.on 'error', onError
+    @srv.on 'close', onClose
+
     @srv.close()
-    @srv = undefined
 
   stopDatabase: (callback) ->
 
-    @db.disconnect callback
-    @db = undefined
-    Databank.db = undefined
+    @db.disconnect (err) =>
+      @db = undefined
+      DatabankObject.db = undefined
+      callback err
 
   getName: () ->
     "microservice"
