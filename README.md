@@ -66,6 +66,54 @@ server.start (err) ->
 
 ```
 
+Calling a microservice
+----------------------
+
+Note that you probably shouldn't invoke Microservice directly; you should use
+a sub-class. Here are the methods that you should use:
+
+* `constructor(environment)`. Takes an environment as a parameter. If none is
+  provided, uses process.env. The environment variables are changed into
+  configuration options.
+* `start(callback)`. Start the microservice. `callback` is called with either
+  an `err` argument or `null`.
+* `stop(callback)`. Stop the microservice. `callback` is called with either an
+  `err` argument or `null`.
+
+Methods to overload
+-------------------
+
+These are methods that sub-classes of Microservice should overload.
+
+* `getName()`. Return the name of the microservice. Used for error reporting and
+  the like.
+* `getSchema()`. Return the Databank schema for the microservice. See
+  https://github.com/e14n/databank#schemata for the format.
+* `setupMiddleware(exp)`. If you have any custom middleware to set up for the
+  express server `exp`, do it here.
+* `setupParams(exp)`. Any custom params would go here. Good place for
+  `exp.param()` statements.
+* `setupRoutes(exp)`. All your routes should go here.
+* `startCustom(callback)`. If you need to have something happen after starting
+  the server, do it here. This is a good time for ensuring databank items, for
+  example.
+* `stopCustom(callback)`. If you need to do something before stopping (what?),
+  do it here.
+* `environmentToConfig(env)`. Convert the environment to a config object.
+
+Utility methods
+---------------
+
+These are some useful methods for microservice sub-classes to use.
+
+* `envInt(env, key, def)`: Return the environment variable from `env` at `key`,
+  as an integer, or `def` if the variable doesn't exist.
+* `envJSON(env, key, def)`: Return the environment variable from `env` at `key`,
+  parsed as JSON, or `def` if the variable doesn't exist.
+* `appAuthc(req, res, next)`: Middleware for checking the bearer token of a
+  request against the configured app keys (see below). Will give the correct
+  authorization error if none is allowed. Use this in your routes!
+
 Environment variables
 ---------------------
 
