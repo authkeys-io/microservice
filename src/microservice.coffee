@@ -108,11 +108,11 @@ class Microservice
     else
       @srv = http.createServer(@express)
 
-    onError = (err) =>
+    onError = (err) ->
       clearListeners()
       callback err
 
-    onListening = () =>
+    onListening = () ->
       callback null
 
     clearListeners = () =>
@@ -181,9 +181,9 @@ class Microservice
       level: @config.logLevel
 
     if @config.logFile
-        logParams.streams = [{path: @config.logFile}]
+      logParams.streams = [{path: @config.logFile}]
     else
-        logParams.streams = [{stream: process.stderr}]
+      logParams.streams = [{stream: process.stderr}]
 
     logParams.name = @getName()
 
@@ -203,7 +203,8 @@ class Microservice
         req.appName = appKeys[tokenString]
         next()
       else
-        req.log.warn {tokenString: tokenString, appKeys: appKeys}, "Unauthorized token string"
+        props = {tokenString: tokenString, appKeys: appKeys}
+        req.log.warn props, "Unauthorized token string"
         next new HTTPError("Unauthorized token string", 403)
 
   bearerToken: (req, callback) ->
@@ -211,7 +212,8 @@ class Microservice
     if authorization
       m = /^[Bb]earer\s+(\w+)$/.exec authorization
       if !m?
-        callback new HTTPError("Authorization header should be like 'Bearer <token>'", 400)
+        msg = "Authorization header should be like 'Bearer <token>'"
+        callback new HTTPError(msg, 400)
       else
         tokenString = m[1]
         callback null, tokenString
@@ -260,12 +262,13 @@ class Microservice
       if req.log
         req.log.error {err: err}, "Error"
       if config.slackHook
+        id = "#{config.name}/#{config.hostname}"
         options =
           url: config.slackHook
           headers:
             "Content-Type": "application/json"
           json:
-            text: "#{config.name}/#{config.hostname} #{err.name}: #{err.message}."
+            text: "#{id} #{err.name}: #{err.message}."
             username: "microservice"
             icon_emoji: ":bomb:"
         request.post options, (err, response, body) ->
@@ -279,10 +282,16 @@ class Microservice
   setupRoutes: (exp) ->
     undefined
 
+  envInt: (env, key, def) ->
+    if env[key] then parseInt(env[key], 10) else def
+
+  envJSON: (env, key, def) ->
+    if env[key] then JSON.parse(env[key]) else def
+
   environmentToConfig: (environment) ->
 
     config =
-      port: if environment['PORT'] then parseInt(environment['PORT'], 10) else 80
+      port: @envInt environment, 'PORT', 80
       hostname: environment['HOSTNAME']
       address: environment['ADDRESS'] || '0.0.0.0'
       key: environment['KEY']
@@ -291,8 +300,8 @@ class Microservice
       logFile: environment['LOG_FILE'] || null
       slackHook: environment['SLACK_HOOK']
       driver: environment['DRIVER']
-      params: if environment['PARAMS'] then JSON.parse(environment['PARAMS']) else {}
-      maxUploadSize: if environment['MAX_UPLOAD_SIZE'] then environment['MAX_UPLOAD_SIZE'] else '50mb'
+      params: @envJSON environment, 'PARAMS', {}
+      maxUploadSize: environment['MAX_UPLOAD_SIZE'] or '50mb'
       appKeys: {}
 
     for name, value of environment

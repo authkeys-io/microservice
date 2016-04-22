@@ -68,7 +68,7 @@ vows
           assert.ifError err
         teardown: (service) ->
           callback = @callback
-          service.stop (err) =>
+          service.stop (err) ->
             callback null
           undefined
         'and we ping it':

@@ -31,31 +31,32 @@ vows
   .describe('test for microservices without a getSchema()')
   .addBatch
     'When we instantiate a microservice without a getSchema() method':
-        topic: ->
+      topic: ->
+        callback = @callback
+        try
+          env =
+            PORT: "2342"
+            HOSTNAME: "localhost"
+            DRIVER: "memory"
+            LOG_FILE: "/dev/null"
+          service = new BadWidgetService env
+          callback null, service
+        catch err
+          callback err
+        undefined
+      'it works': (err, service) ->
+        assert.ifError err
+      'and we start the service':
+        topic: (service) ->
           callback = @callback
-          try
-            env =
-              PORT: "2342"
-              HOSTNAME: "localhost"
-              DRIVER: "memory"
-              LOG_FILE: "/dev/null"
-            service = new BadWidgetService env
-            callback null, service
-          catch err
-            callback err
+          service.start (err) ->
+            if err
+              callback null, err
+            else
+              callback new Error("Unexpected success")
           undefined
-        'it works': (err, service) ->
+        'it fails correctly': (err, received) ->
           assert.ifError err
-        'and we start the service':
-          topic: (service) ->
-            callback = @callback
-            service.start (err) ->
-              if err
-                callback null, err
-              else
-                callback new Error("Unexpected success")
-            undefined
-          'it fails correctly': (err, received) ->
-            assert.ifError err
-            assert.equal received.message, "No schema defined for this microservice class"
+          msg = "No schema defined for this microservice class"
+          assert.equal received.message, msg
   .export(module)

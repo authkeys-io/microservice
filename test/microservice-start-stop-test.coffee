@@ -32,42 +32,41 @@ vows
   .describe('start-stop-start-stop')
   .addBatch
     'When we instantiate a microservice':
-        topic: ->
+      topic: ->
+        callback = @callback
+        try
+          env =
+            PORT: "2342"
+            HOSTNAME: "localhost"
+            DRIVER: "memory"
+            LOG_FILE: "/dev/null"
+            APP_KEY_UNIT_TEST: APP_KEY
+          service = new WidgetService env
+          callback null, service
+        catch err
+          callback err
+        undefined
+      'it works': (err, service) ->
+        assert.ifError err
+      'and we start and stop the service a few times':
+        topic: (service) ->
           callback = @callback
-          try
-            env =
-              PORT: "2342"
-              HOSTNAME: "localhost"
-              DRIVER: "memory"
-              LOG_FILE: "/dev/null"
-              APP_KEY_UNIT_TEST: APP_KEY
-            service = new WidgetService env
-            callback null, service
-          catch err
-            callback err
+          async.waterfall [
+            (callback) ->
+              service.start callback
+            (callback) ->
+              service.stop callback
+            (callback) ->
+              service.start callback
+            (callback) ->
+              service.stop callback
+            (callback) ->
+              service.start callback
+            (callback) ->
+              service.stop callback
+          ], callback
           undefined
-        'it works': (err, service) ->
+        'it works': (err) ->
           assert.ifError err
-        'and we start and stop the service a few times':
-          topic: (service) ->
-            callback = @callback
-            async.waterfall [
-              (callback) ->
-                service.start callback
-              (callback) ->
-                service.stop callback
-              (callback) ->
-                service.start callback
-              (callback) ->
-                service.stop callback
-              (callback) ->
-                service.start callback
-              (callback) ->
-                service.stop callback
-            ], callback
-            undefined
-          'it works': (err) ->
-            assert.ifError err
-
 
   .export(module)
