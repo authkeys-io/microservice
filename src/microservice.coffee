@@ -222,28 +222,53 @@ class Microservice
     else
       callback new HTTPError("Authorization required", 401)
 
-  setupExpress: () ->
+  errorHandler: (err, req, res, next) ->
+    config = req.app.config
 
-    requestLogger = (req, res, next) ->
-      req.id = uuid.v4()
-      weblog = req.app.log.child
-        req_id: req.id
-        url: req.originalUrl
-        method: req.method
-        component: "web"
-      end = res.end
-      req.log = weblog
-      res.end = (chunk, encoding) ->
-        res.end = end
-        res.end(chunk, encoding)
-        rec = {req: req, res: res}
-        weblog.info(rec)
-      next()
+    if err.name == "NoSuchThingError"
+      res.statusCode = 404
+    else
+      res.statusCode = err.statusCode or 500
+    if req.log
+      req.log.error {err: err}, "Error"
+    if config.slackHook
+      id = "#{config.name}/#{config.hostname}"
+      options =
+        url: config.slackHook
+        headers:
+          "Content-Type": "application/json"
+        json:
+          text: "#{id} #{err.name}: #{err.message}."
+          username: "microservice"
+          icon_emoji: ":bomb:"
+      request.post options, (err, response, body) ->
+        if err
+          console.error err
+    res.setHeader "Content-Type", "application/json"
+    res.json {status: 'error', message: err.message}
+
+  requestLogger: (req, res, next) ->
+    req.id = uuid.v4()
+    weblog = req.app.log.child
+      req_id: req.id
+      url: req.originalUrl
+      method: req.method
+      component: "web"
+    end = res.end
+    req.log = weblog
+    res.end = (chunk, encoding) ->
+      res.end = end
+      res.end(chunk, encoding)
+      rec = {req: req, res: res}
+      weblog.info(rec)
+    next()
+
+  setupExpress: () ->
 
     exp = express()
     exp.log = @setupLogger()
 
-    exp.use requestLogger
+    exp.use @requestLogger
     exp.use bodyParser.json({limit: @config.maxUploadSize})
 
     exp.config = @config
@@ -252,30 +277,7 @@ class Microservice
     @setupRoutes exp
 
     # Error handler
-    exp.use (err, req, res, next) ->
-      config = req.app.config
-
-      if err.name == "NoSuchThingError"
-        res.statusCode = 404
-      else
-        res.statusCode = err.statusCode or 500
-      if req.log
-        req.log.error {err: err}, "Error"
-      if config.slackHook
-        id = "#{config.name}/#{config.hostname}"
-        options =
-          url: config.slackHook
-          headers:
-            "Content-Type": "application/json"
-          json:
-            text: "#{id} #{err.name}: #{err.message}."
-            username: "microservice"
-            icon_emoji: ":bomb:"
-        request.post options, (err, response, body) ->
-          if err
-            console.error err
-      res.setHeader "Content-Type", "application/json"
-      res.json {status: 'error', message: err.message, }
+    exp.use @errorHandler
 
     exp
 
