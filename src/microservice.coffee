@@ -51,6 +51,8 @@ class Microservice
         mu.startDatabase callback
       (callback) ->
         mu.startNetwork callback
+      (callback) ->
+        mu.startCustom callback
     ], (err) ->
       if err
         callback err
@@ -62,6 +64,8 @@ class Microservice
     mu = @
 
     async.waterfall [
+      (callback) ->
+        mu.stopCustom callback
       (callback) ->
         mu.stopNetwork callback
       (callback) ->
@@ -271,6 +275,8 @@ class Microservice
     exp.config = @config
     exp.config.name = @getName()
 
+    @setupMiddleware exp
+    @setupParams exp
     @setupRoutes exp
 
     # Error handler
@@ -278,8 +284,20 @@ class Microservice
 
     exp
 
+  setupMiddleware: (exp) ->
+    undefined
+
+  setupParams: (exp) ->
+    undefined
+
   setupRoutes: (exp) ->
     undefined
+
+  startCustom: (callback) ->
+    callback null
+
+  stopCustom: (callback) ->
+    callback null
 
   envInt: (env, key, def) ->
     if env[key] then parseInt(env[key], 10) else def
