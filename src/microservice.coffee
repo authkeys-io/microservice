@@ -242,7 +242,7 @@ class Microservice
     exp.log = @setupLogger()
 
     exp.use requestLogger
-    exp.use bodyParser.json()
+    exp.use bodyParser.json({limit: @config.maxUploadSize})
 
     exp.config = @config
     exp.config.name = @getName()
@@ -292,6 +292,7 @@ class Microservice
       slackHook: environment['SLACK_HOOK']
       driver: environment['DRIVER']
       params: if environment['PARAMS'] then JSON.parse(environment['PARAMS']) else {}
+      maxUploadSize: if environment['MAX_UPLOAD_SIZE'] then environment['MAX_UPLOAD_SIZE'] else '50mb'
       appKeys: {}
 
     for name, value of environment

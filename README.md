@@ -84,6 +84,8 @@ Here are the variables it uses by default.
 * **LOG_LEVEL**: Bunyan log level. Defaults to 'info'.
 * **APP_KEY_SOMETHING**: The app key that app 'something' will use to access
   this server. Supported by internal appAuthc.
+* **MAX_UPLOAD_SIZE**: Maximum size of an upload. Use a string with 'mb', 'gb'
+  or 'kb' to define a size in bytes. Defaults to '50mb'
 
 You can have a microservice grab more environment variables by overloading
 `environmentToConfig`.
