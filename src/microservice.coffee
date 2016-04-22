@@ -28,9 +28,6 @@ request = require 'request'
 
 HTTPError = require './httperror'
 
-psw = (str) ->
-  process.stderr.write str + "\n"
-
 class Microservice
 
   constructor: (environment) ->
