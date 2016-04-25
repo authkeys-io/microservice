@@ -15,8 +15,6 @@
 # limitations under the License.
 
 fs = require 'fs'
-
-{print} = require 'util'
 {spawn} = require 'child_process'
 
 glob = require 'glob'
@@ -29,7 +27,7 @@ cmd = (str, callback) ->
   proc.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
   proc.stdout.on 'data', (data) ->
-    print data.toString()
+    process.stdout.write data.toString()
   proc.on 'exit', (code) ->
     callback?() if code is 0
 
@@ -46,7 +44,7 @@ task 'watch', 'Watch src/ for changes', ->
   coffee.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
   coffee.stdout.on 'data', (data) ->
-    print data.toString()
+    process.stdout.write data.toString()
 
 task 'clean', 'Clean up extra files', ->
   patterns = ["lib/*.js", "test/*.js", "*~", "lib/*~", "src/*~", "test/*~"]
