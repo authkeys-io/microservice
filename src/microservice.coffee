@@ -238,9 +238,9 @@ class Microservice
       req.log.error {err: err}, "Error"
 
     if config.slackHook
-      @slackMessage "#{err.name}: #{err.message}", ":bomb:", (err) ->
+      @slackMessage "#{err.name}: #{err.message}", ":bomb:", (err) =>
         if err
-          console.error err
+          @express.log.error {err: err}, "Error posting to Slack"
 
     res.setHeader "Content-Type", "application/json"
     res.json {status: 'error', message: err.message}
@@ -305,6 +305,8 @@ class Microservice
     @setupParams exp
     @setupRoutes exp
 
+    exp.use @noRouteMatch
+
     self = @
 
     # Error handler
@@ -360,5 +362,8 @@ class Microservice
         config.appKeys[value] = appName.toLowerCase()
 
     config
+
+  noRouteMatch: (req, res, next) ->
+    next new HTTPError("No route found for #{req.originalUrl}", 404)
 
 module.exports = Microservice
