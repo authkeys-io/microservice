@@ -364,6 +364,10 @@ class Microservice
     config
 
   noRouteMatch: (req, res, next) ->
-    next new HTTPError("No route found for #{req.originalUrl}", 404)
+    # OPTIONS default handler falls through here; let it
+    if req.method == "OPTIONS"
+      next()
+    else
+      next new HTTPError("No route found for #{req.originalUrl}", 404)
 
 module.exports = Microservice
