@@ -113,6 +113,9 @@ These are some useful methods for microservice sub-classes to use.
 * `appAuthc(req, res, next)`: Middleware for checking the bearer token of a
   request against the configured app keys (see below). Will give the correct
   authorization error if none is allowed. Use this in your routes!
+* `slackMessage(message, icon, callback)`. Notification method for sending
+  updates to Slack. Errors are sent to Slack by default, but you can send other
+  notifications if you need to.
 
 Environment variables
 ---------------------

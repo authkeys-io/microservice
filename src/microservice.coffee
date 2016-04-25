@@ -15,6 +15,8 @@
 util = require 'util'
 http = require 'http'
 https = require 'https'
+os = require 'os'
+assert = require 'assert'
 
 debug = require('debug')('microservice')
 _ = require 'lodash'
@@ -224,29 +226,53 @@ class Microservice
       callback new HTTPError("Authorization required", 401)
 
   errorHandler: (err, req, res, next) ->
-    config = req.app.config
+
+    config = @config
 
     if err.name == "NoSuchThingError"
       res.statusCode = 404
     else
       res.statusCode = err.statusCode or 500
+
     if req.log
       req.log.error {err: err}, "Error"
+
     if config.slackHook
-      id = "#{config.name}/#{config.hostname}"
-      options =
-        url: config.slackHook
-        headers:
-          "Content-Type": "application/json"
-        json:
-          text: "#{id} #{err.name}: #{err.message}."
-          username: "microservice"
-          icon_emoji: ":bomb:"
-      request.post options, (err, response, body) ->
+      @slackMessage "#{err.name}: #{err.message}", ":bomb:", (err) ->
         if err
           console.error err
+
     res.setHeader "Content-Type", "application/json"
     res.json {status: 'error', message: err.message}
+
+  slackMessage: (message, icon, callback) ->
+
+    if !callback?
+      callback = icon
+      icon = ":speech_balloon:"
+
+    assert _.isString(message)
+    assert _.isString(icon)
+    assert _.isFunction(callback)
+
+    hostname = os.hostname()
+
+    if process.env.DOCKERCLOUD_CONTAINER_FQDN?
+      id = "#{process.env.DOCKERCLOUD_CONTAINER_FQDN}/#{hostname}"
+    else
+      id = hostname
+
+    options =
+      url: @config.slackHook
+      headers:
+        "Content-Type": "application/json"
+      json:
+        text: "#{id} #{message}"
+        username: @getName()
+        icon_emoji: icon
+
+    request.post options, (err, response, body) ->
+      callback err
 
   requestLogger: (req, res, next) ->
     req.id = uuid.v4()
@@ -279,8 +305,14 @@ class Microservice
     @setupParams exp
     @setupRoutes exp
 
+    self = @
+
     # Error handler
-    exp.use @errorHandler
+    # Note: we go through some acrobatics to make sure the arity of the
+    # function passed to use() is 4.
+
+    exp.use (err, req, res, next) ->
+      self.errorHandler err, req, res, next
 
     exp
 
