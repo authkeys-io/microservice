@@ -113,9 +113,12 @@ These are some useful methods for microservice sub-classes to use.
 * `appAuthc(req, res, next)`: Middleware for checking the bearer token of a
   request against the configured app keys (see below). Will give the correct
   authorization error if none is allowed. Use this in your routes!
-* `slackMessage(message, icon, callback)`. Notification method for sending
+* `slackMessage(type, message, icon, callback)`. Notification method for sending
   updates to Slack. Errors are sent to Slack by default, but you can send other
-  notifications if you need to.
+  notifications if you need to. You can send things to different hooks using
+  the 'type' modifier. If there is no specific hook for that type (see
+  SLACK_HOOK_SOMETHING below for how to do that), it will be sent via the
+  default hook.
 
 Environment variables
 ---------------------
@@ -137,6 +140,13 @@ Here are the variables it uses by default.
   this server. Supported by internal appAuthc.
 * **MAX_UPLOAD_SIZE**: Maximum size of an upload. Use a string with 'mb', 'gb'
   or 'kb' to define a size in bytes. Defaults to '50mb'.
+* **SLACK_HOOK** A [Webhook](https://en.wikipedia.org/wiki/Webhook) from
+  [Slack](https://api.slack.com/incoming-webhooks) for posting messages.
+* **SLACK_HOOK_SOMETHING** The hook for sending 'something' messages to Slack.
+  This lets you specialise your Slack messages. By default, the error handler
+  will use the 'error' hook, or it will fall back to the default. Note that
+  hook 'SLACK_HOOK_SOMETHING' will get lowercased to 'something' when you need
+  to send a slack message.
 
 You can have a microservice grab more environment variables by overloading
 `environmentToConfig`.

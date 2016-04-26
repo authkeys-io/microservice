@@ -237,23 +237,31 @@ class Microservice
     if req.log
       req.log.error {err: err}, "Error"
 
-    if config.slackHook
-      @slackMessage "#{err.name}: #{err.message}", ":bomb:", (err) =>
-        if err
-          @express.log.error {err: err}, "Error posting to Slack"
+    @slackMessage 'error', "#{err.name}: #{err.message}", ":bomb:", (err) =>
+      if err
+        @express.log.error {err: err}, "Error posting to Slack"
 
     res.setHeader "Content-Type", "application/json"
     res.json {status: 'error', message: err.message}
 
-  slackMessage: (message, icon, callback) ->
+  slackMessage: (type, message, icon, callback) ->
 
     if !callback?
       callback = icon
-      icon = ":speech_balloon:"
+      icon = ':speech_balloon:'
 
+    assert _.isString(type)
     assert _.isString(message)
     assert _.isString(icon)
     assert _.isFunction(callback)
+
+    if type? and _.has(@config.slackHooks, type)
+      hook = @config.slackHooks[type]
+    else
+      hook = @config.slackHook
+
+    if !hook?
+      return callback null
 
     hostname = os.hostname()
 
@@ -263,7 +271,7 @@ class Microservice
       id = hostname
 
     options =
-      url: @config.slackHook
+      url: hook
       headers:
         "Content-Type": "application/json"
       json:
@@ -354,12 +362,21 @@ class Microservice
       params: @envJSON environment, 'PARAMS', {}
       maxUploadSize: environment['MAX_UPLOAD_SIZE'] or '50mb'
       appKeys: {}
+      slackHooks: {}
 
     for name, value of environment
+
       match = name.match /^APP_KEY_(.*)$/
+
       if match
         [full, appName] = match
         config.appKeys[value] = appName.toLowerCase()
+
+      match = name.match /^SLACK_HOOK_(.*)$/
+
+      if match
+        [full, type] = match
+        config.slackHooks[type.toLowerCase()] = value
 
     config
 

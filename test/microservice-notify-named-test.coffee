@@ -28,26 +28,31 @@ process.on 'uncaughtException', (err) ->
   console.error err
 
 vows
-  .describe('notify')
+  .describe('notify with named message')
   .addBatch microserviceBatch
-    'and we try to get a non-existent widget':
+    'and we try to cause a "foo" message':
       topic: (service, slack) ->
         callback = @callback
         async.parallel [
           (callback) ->
             slack.once 'request', (req, res) ->
-              callback null
+              if req.url == '/foo'
+                callback null
+              else
+                callback new Error("Should ping /foo, got #{req.url}")
           (callback) ->
             options =
-              url: 'http://localhost:2342/widget/does-not-exist'
+              url: 'http://localhost:2342/message'
+              json:
+                message: "My dog has fleas"
+                type: "foo"
               headers:
                 authorization: "Bearer #{APP_KEY}"
-            request.get options, (err, response, body) ->
+            request.post options, (err, response, body) ->
               if err
                 callback err
               else
-                results = JSON.parse(body)
-                callback null, results
+                callback null
         ], (err) ->
           if err
             callback err

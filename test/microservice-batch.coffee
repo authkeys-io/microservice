@@ -40,7 +40,9 @@ microserviceBatch = (rest) ->
         topic: ->
           WidgetService = require './widgetservice'
           env =
-            SLACK_HOOK: "http://localhost:1516/post-message"
+            SLACK_HOOK: "http://localhost:1516/default"
+            SLACK_HOOK_ERROR: "http://localhost:1516/error"
+            SLACK_HOOK_FOO: "http://localhost:1516/foo"
             PORT: "2342"
             DRIVER: "memory"
             HOSTNAME: "localhost"

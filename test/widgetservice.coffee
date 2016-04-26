@@ -70,6 +70,15 @@ class WidgetService extends Microservice
         else
           res.json {status: "OK"}
 
+    # For generating slack messages
+
+    exp.post '/message', @appAuthc, (req, res, next) =>
+      {type, message} = req.body
+      @slackMessage type, message, (err) ->
+        if err
+          next err
+        else
+          res.json {type: type, message: message, status: "OK"}
     exp
 
 module.exports = WidgetService
