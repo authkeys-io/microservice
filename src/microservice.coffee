@@ -265,17 +265,12 @@ class Microservice
 
     hostname = os.hostname()
 
-    if process.env.DOCKERCLOUD_CONTAINER_FQDN?
-      id = "#{process.env.DOCKERCLOUD_CONTAINER_FQDN}/#{hostname}"
-    else
-      id = hostname
-
     options =
       url: hook
       headers:
         "Content-Type": "application/json"
       json:
-        text: "#{id} #{message}"
+        text: "#{hostname} #{message}"
         username: @getName()
         icon_emoji: icon
 
