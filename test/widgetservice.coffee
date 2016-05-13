@@ -20,6 +20,20 @@ class WidgetService extends Microservice
   getSchema: ->
     {widget: Widget.schema}
 
+  setupParams: (exp) ->
+
+    exp.param 'code', (req, res, next, id) ->
+      req.errorCode = id
+      next()
+
+    exp.param 'id', (req, res, next, id) ->
+      Widget.get id, (err, widget) ->
+        if err
+          next err
+        else
+          req.widget = widget
+          next()
+
   setupRoutes: (exp) ->
 
     exp.get '/version', (req, res, next) ->
@@ -41,14 +55,6 @@ class WidgetService extends Microservice
           next err
         else
           res.json allWidgets
-
-    exp.param 'id', (req, res, next, id) ->
-      Widget.get id, (err, widget) ->
-        if err
-          next err
-        else
-          req.widget = widget
-          next()
 
     exp.get '/widget/:id', @appAuthc, (req, res, next) ->
       res.json req.widget
@@ -79,6 +85,15 @@ class WidgetService extends Microservice
           next err
         else
           res.json {type: type, message: message, status: "OK"}
+
+    # For causing errors
+
+    exp.get '/error/:code', @appAuthc, (req, res, next) ->
+      message = req.query.message or "Error"
+      code = parseInt(req.errorCode, 10)
+      err = new Microservice.HTTPError(message, code)
+      next err
+
     exp
 
 module.exports = WidgetService
