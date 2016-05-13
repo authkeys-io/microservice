@@ -237,9 +237,10 @@ class Microservice
     if req.log
       req.log.error {err: err}, "Error"
 
-    @slackMessage 'error', "#{err.name}: #{err.message}", ":bomb:", (err) =>
-      if err
-        @express.log.error {err: err}, "Error posting to Slack"
+    if res.statusCode >= 500 and res.statusCode < 600
+      @slackMessage 'error', "#{err.name}: #{err.message}", ":bomb:", (err) =>
+        if err
+          @express.log.error {err: err}, "Error posting to Slack"
 
     res.setHeader "Content-Type", "application/json"
     res.json {status: 'error', message: err.message}
@@ -383,3 +384,4 @@ class Microservice
       next new HTTPError("No route found for #{req.originalUrl}", 404)
 
 module.exports = Microservice
+module.exports.HTTPError = HTTPError

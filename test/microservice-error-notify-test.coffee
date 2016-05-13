@@ -30,7 +30,7 @@ process.on 'uncaughtException', (err) ->
 vows
   .describe('notify on error')
   .addBatch microserviceBatch
-    'and we try to get a non-existent widget':
+    'and we generate a server error':
       topic: (service, slack) ->
         callback = @callback
         async.parallel [
@@ -42,7 +42,7 @@ vows
                 callback new Error("Should ping /error, got #{req.url}")
           (callback) ->
             options =
-              url: 'http://localhost:2342/widget/does-not-exist'
+              url: 'http://localhost:2342/error/500?message=Server+error'
               headers:
                 authorization: "Bearer #{APP_KEY}"
             request.get options, (err, response, body) ->
@@ -59,4 +59,39 @@ vows
         undefined
       'it works': (err) ->
         assert.ifError err
+      'and we generate a client error':
+        topic: (service, slack) ->
+          callback = @callback
+          async.parallel [
+            (callback) ->
+              pinged = false
+              to = null
+              slack.once 'request', (req, res) ->
+                if req.url == '/error'
+                  pinged = true
+                  clearTimeout to
+                  callback new Error("Was pinged")
+              checkPinged = ->
+                if !pinged
+                  callback null
+              to = setTimeout checkPinged, 4000
+            (callback) ->
+              options =
+                url: 'http://localhost:2342/error/400?message=Client+error'
+                headers:
+                  authorization: "Bearer #{APP_KEY}"
+              request.get options, (err, response, body) ->
+                if err
+                  callback err
+                else
+                  results = JSON.parse(body)
+                  callback null, results
+          ], (err) ->
+            if err
+              callback err
+            else
+              callback null
+          undefined
+        'it works': (err) ->
+          assert.ifError err
   .export(module)
