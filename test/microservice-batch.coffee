@@ -10,7 +10,7 @@ assert = require 'assert'
 async = require 'async'
 request = require 'request'
 
-APP_KEY = "soothlesseecovezqislam"
+env = require './env'
 
 process.on 'uncaughtException', (err) ->
   console.error err
@@ -39,15 +39,6 @@ microserviceBatch = (rest) ->
       'and we start a WidgetService':
         topic: ->
           WidgetService = require './widgetservice'
-          env =
-            SLACK_HOOK: "http://localhost:1516/default"
-            SLACK_HOOK_ERROR: "http://localhost:1516/error"
-            SLACK_HOOK_FOO: "http://localhost:1516/foo"
-            PORT: "2342"
-            DRIVER: "memory"
-            HOSTNAME: "localhost"
-            LOG_FILE: "/dev/null"
-            APP_KEY_UNIT_TEST: APP_KEY
           service = new WidgetService env
           service.start (err) =>
             if err
@@ -65,12 +56,10 @@ microserviceBatch = (rest) ->
 
   batch = _.clone(base)
 
-  key = _.keys(rest)[0]
-
-  batch['When we set up a mock Slack server']['and we start a WidgetService'][key] = rest[key]
+  _.assign batch['When we set up a mock Slack server']['and we start a WidgetService'], rest
 
   batch
 
-microserviceBatch.appKey = APP_KEY
+microserviceBatch.appKey = env.APP_KEY_UNIT_TEST
 
 module.exports = microserviceBatch
