@@ -212,8 +212,9 @@ class Microservice
 
   bearerToken: (req, callback) ->
     authorization = req.headers.authorization
+    debug("Checking #{authorization} for a bearer token")
     if authorization
-      m = /^[Bb]earer\s+(\w+)$/.exec authorization
+      m = /^[Bb]earer\s+(\S+)$/.exec authorization
       if !m?
         msg = "Authorization header should be like 'Bearer <token>'"
         callback new HTTPError(msg, 400)
@@ -221,6 +222,8 @@ class Microservice
         tokenString = m[1]
         callback null, tokenString
     else if req.query?.access_token?
+      debug("No #{authorization} header; using access_token query param")
+      debug(req.query?.access_token)
       callback null, req.query?.access_token
     else
       callback new HTTPError("Authorization required", 401)
