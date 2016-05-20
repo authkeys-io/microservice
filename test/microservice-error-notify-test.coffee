@@ -22,8 +22,6 @@ request = require 'request'
 
 microserviceBatch = require './microservice-batch'
 
-APP_KEY = "soothlesseecovezqislam"
-
 process.on 'uncaughtException', (err) ->
   console.error err
 
@@ -44,7 +42,7 @@ vows
             options =
               url: 'http://localhost:2342/error/500?message=Server+error'
               headers:
-                authorization: "Bearer #{APP_KEY}"
+                authorization: "Bearer #{microserviceBatch.appKey}"
             request.get options, (err, response, body) ->
               if err
                 callback err
@@ -79,7 +77,7 @@ vows
               options =
                 url: 'http://localhost:2342/error/400?message=Client+error'
                 headers:
-                  authorization: "Bearer #{APP_KEY}"
+                  authorization: "Bearer #{microserviceBatch.appKey}"
               request.get options, (err, response, body) ->
                 if err
                   callback err

@@ -22,8 +22,6 @@ request = require 'request'
 
 microserviceBatch = require './microservice-batch'
 
-APP_KEY = "soothlesseecovezqislam"
-
 process.on 'uncaughtException', (err) ->
   console.error err
 
@@ -47,7 +45,7 @@ vows
                 message: "My dog has fleas"
                 type: "foo"
               headers:
-                authorization: "Bearer #{APP_KEY}"
+                authorization: "Bearer #{microserviceBatch.appKey}"
             request.post options, (err, response, body) ->
               if err
                 callback err
