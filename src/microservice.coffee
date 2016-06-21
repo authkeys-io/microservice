@@ -208,7 +208,7 @@ class Microservice
       else
         props = {tokenString: tokenString, appKeys: appKeys}
         req.log.warn props, "Unauthorized token string"
-        next new HTTPError("Unauthorized token string", 403)
+        next new HTTPError("Unauthorized token string", 401)
 
   bearerToken: (req, callback) ->
     authorization = req.headers.authorization
@@ -217,7 +217,7 @@ class Microservice
       m = /^[Bb]earer\s+(\S+)$/.exec authorization
       if !m?
         msg = "Authorization header should be like 'Bearer <token>'"
-        callback new HTTPError(msg, 400)
+        callback new HTTPError(msg, 401)
       else
         tokenString = m[1]
         callback null, tokenString
@@ -244,6 +244,11 @@ class Microservice
       @slackMessage 'error', "#{err.name}: #{err.message}", ":bomb:", (err) =>
         if err
           @express.log.error {err: err}, "Error posting to Slack"
+
+    # This is required for 401 responses
+
+    if res.statusCode is 401
+      res.setHeader "WWW-Authenticate", "Bearer"
 
     res.setHeader "Content-Type", "application/json"
     res.json {status: 'error', message: err.message}

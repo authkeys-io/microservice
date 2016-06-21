@@ -37,10 +37,13 @@ authfail = (key) ->
         headers:
           authorization: "Bearer #{key}"
       request.get options, (err, response, body) ->
+        wa = response?.headers?['www-authenticate']
         if err
           callback err
-        else if response.statusCode != 403
+        else if response.statusCode != 401
           callback new Error("Unexpected code #{response.statusCode}")
+        else if wa != "Bearer"
+          callback new Error("Wrong WWW-Authenticate header: #{wa}")
         else
           callback null
       undefined
@@ -98,10 +101,13 @@ qfail = (key) ->
       options =
         url: "http://localhost:2342/widget?access_token=#{key}"
       request.get options, (err, response, body) ->
+        wa = response?.headers?['www-authenticate']
         if err
           callback err
-        else if response.statusCode != 403
+        else if response.statusCode != 401
           callback new Error("Unexpected code #{response.statusCode}")
+        else if wa != "Bearer"
+          callback new Error("Wrong WWW-Authenticate header: #{wa}")
         else
           callback null
       undefined
