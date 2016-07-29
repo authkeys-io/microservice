@@ -12,6 +12,11 @@
     "prepublish": "cake build",
     "clean": "cake clean"
   },
+  "files": [
+    "lib",
+    "src",
+    "test"
+  ],
   "dependencies": {
     "async": "^2.0.1",
     "body-parser": "^1.14.2",
