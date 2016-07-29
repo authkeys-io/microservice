@@ -1,7 +1,7 @@
-fuzzy.io-microservice
+fuzzy.ai-microservice
 =====================
 
-This is the microservice class we use for Fuzzy.io. The goal is to avoid
+This is the microservice class we use for Fuzzy.ai. The goal is to avoid
 re-writing a lot of boilerplate needed to set up an HTTP server and a database
 connection. It has a couple of nice characteristics that make this useful for
 us.
@@ -16,7 +16,7 @@ We use Docker, so it dumps out its logs to stdout.
 License
 -------
 
-Copyright 2016 Fuzzy.io
+Copyright 2016 Fuzzy.ai
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ example.
 
 ```coffeescript
 
-Microservice = require 'fuzzy.io-microservice'
+Microservice = require 'fuzzy.ai-microservice'
 
 # Subclass Microservice
 

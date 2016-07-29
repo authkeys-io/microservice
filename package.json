@@ -1,17 +1,16 @@
 {
-  "name": "fuzzy.io-microservice",
+  "name": "fuzzy.ai-microservice",
   "version": "0.10.0",
-  "description": "Simple microservice class used by Fuzzy.io",
-  "homepage": "http://github.com/fuzzy-io/microservice",
-  "bugs": "https://github.com/fuzzy-io/microservice/issues",
+  "description": "Simple microservice class used by Fuzzy.ai",
+  "homepage": "http://github.com/fuzzy-ai/microservice",
+  "bugs": "https://github.com/fuzzy-ai/microservice/issues",
   "license": "Apache-2.0",
   "main": "lib/microservice.js",
   "scripts": {
     "test": "cake test",
     "build": "cake build",
     "prepublish": "cake build",
-    "clean": "cake clean",
-    "install": "mkdir -p lib/ && coffee -b -c -o lib/ src/*.coffee"
+    "clean": "cake clean"
   },
   "dependencies": {
     "lodash": "^3.10.1",
@@ -31,6 +30,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/fuzzy-io/microservice.git"
+    "url": "http://github.com/fuzzy-ai/microservice.git"
   }
 }
