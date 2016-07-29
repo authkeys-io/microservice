@@ -1,6 +1,6 @@
 {
   "name": "fuzzy.ai-microservice",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Simple microservice class used by Fuzzy.ai",
   "homepage": "http://github.com/fuzzy-ai/microservice",
   "bugs": "https://github.com/fuzzy-ai/microservice/issues",
