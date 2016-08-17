@@ -30,6 +30,8 @@ request = require 'request'
 
 HTTPError = require './httperror'
 
+ONE_DAY = 24 * 60 * 60 * 1000
+
 class Microservice
 
   constructor: (environment) ->
@@ -44,15 +46,28 @@ class Microservice
     @srv = null
     @db = null
 
+  resetTiming: ->
+    # Timing of requests
+
+    @timing =
+      max: -Infinity
+      min: Infinity
+      avg: NaN
+      count: 0
+
   start: (callback) ->
 
     mu = @
+
+    @resetTiming()
 
     async.waterfall [
       (callback) ->
         mu.startDatabase callback
       (callback) ->
         mu.startNetwork callback
+      (callback) ->
+        mu.startTimers callback
       (callback) ->
         mu.startCustom callback
     ], (err) ->
@@ -65,9 +80,15 @@ class Microservice
 
     mu = @
 
+    # Clear timing of requests
+
+    @resetTiming()
+
     async.waterfall [
       (callback) ->
         mu.stopCustom callback
+      (callback) ->
+        mu.stopTimers callback
       (callback) ->
         mu.stopNetwork callback
       (callback) ->
@@ -168,6 +189,33 @@ class Microservice
       @db = undefined
       DatabankObject.db = undefined
       callback err
+
+  startTimers: (callback) ->
+    # XXX: If there are other timers add them here
+    @startTimingTimer()
+    callback null
+
+  stopTimers: (callback) ->
+    # XXX: If there are other timers add them here
+    @stopTimingTimer()
+    callback null
+
+  startTimingTimer: ->
+    @timingTimer = setTimeout @reportTiming, @config.timingInterval
+
+  stopTimingTimer: ->
+    clearTimeout @timingTimer
+
+  reportTiming: =>
+    if @timing.count is 0
+      message = "No requests during this period"
+    else
+      message = "count: #{@timing.count}, average: #{@timing.avg}, " +
+        "stddev: #{@timing.stddev}, min: #{@timing.min}, max: #{@timing.max}"
+    @resetTiming()
+    @slackMessage 'timing', message,  (err) =>
+      if err
+        @express.log.error {err: err}, "Error posting to Slack"
 
   getName: () ->
     "microservice"
@@ -302,11 +350,38 @@ class Microservice
       weblog.info(rec)
     next()
 
+  requestTimer: (req, res, next) =>
+    startTime = Date.now()
+    end = res.end
+    res.end = (chunk, encoding) =>
+      res.end = end
+      res.end(chunk, encoding)
+      endTime = Date.now()
+      duration = endTime - startTime
+      {count, avg, stddev} = @timing
+      @timing.count += 1
+      if @timing.count is 1
+        @timing.max = duration
+        @timing.min = duration
+        @timing.avg = duration
+        @timing.stddev = 0
+      else
+        if duration > @timing.max
+          @timing.max = duration
+        if duration < @timing.min
+          @timing.min = duration
+        @timing.avg = ((count * avg) + duration)/@timing.count
+        # From http://math.stackexchange.com/questions/102978/incremental-computation-of-standard-deviation
+        @timing.stddev = Math.sqrt(((count - 1)*Math.pow(stddev, 2) + count * Math.pow(avg - @timing.avg, 2) + Math.pow(duration - @timing.avg, 2))/count)
+
+    next()
+
   setupExpress: () ->
 
     exp = express()
     exp.log = @setupLogger()
 
+    exp.use @requestTimer
     exp.use @requestLogger
     exp.use bodyParser.json({limit: @config.maxUploadSize})
 
@@ -367,6 +442,7 @@ class Microservice
       maxUploadSize: environment['MAX_UPLOAD_SIZE'] or '50mb'
       appKeys: {}
       slackHooks: {}
+      timingInterval: @envInt environment, 'TIMING_INTERVAL', ONE_DAY
 
     for name, value of environment
 
