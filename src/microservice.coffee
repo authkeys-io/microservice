@@ -201,10 +201,10 @@ class Microservice
     callback null
 
   startTimingTimer: ->
-    @timingTimer = setTimeout @reportTiming, @config.timingInterval
+    @timingTimer = setInterval @reportTiming, @config.timingInterval
 
   stopTimingTimer: ->
-    clearTimeout @timingTimer
+    clearInterval @timingTimer
 
   reportTiming: =>
     if @timing.count is 0
