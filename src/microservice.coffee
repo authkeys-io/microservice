@@ -42,6 +42,7 @@ class Microservice
       environment = process.env
 
     @config = @environmentToConfig environment
+    @log = @setupLogger()
     @express = @setupExpress()
     @srv = null
     @db = null
@@ -379,7 +380,7 @@ class Microservice
   setupExpress: () ->
 
     exp = express()
-    exp.log = @setupLogger()
+    exp.log = @log.child component: "express"
 
     exp.use @requestTimer
     exp.use @requestLogger
