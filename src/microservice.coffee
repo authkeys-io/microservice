@@ -429,6 +429,12 @@ class Microservice
   envJSON: (env, key, def) ->
     if env[key] then JSON.parse(env[key]) else def
 
+  envBool: (env, key, def) ->
+    if env[key]?
+      env[key].toLowerCase() in ["true", "yes", "on", "1"]
+    else
+      def
+
   environmentToConfig: (environment) ->
 
     config =
