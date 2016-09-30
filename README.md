@@ -110,6 +110,11 @@ These are some useful methods for microservice sub-classes to use.
   as an integer, or `def` if the variable doesn't exist.
 * `envJSON(env, key, def)`: Return the environment variable from `env` at `key`,
   parsed as JSON, or `def` if the variable doesn't exist.
+* `envBool(env, key, def)`: Return the environment variable from `env` at `key`,
+  interpreted as a boolean, or `def` if the variable doesn't exist.
+  Case-insensitive variables that match "true", "yes", "on", or "1" are boolean
+  `true`; ones that match "false", "no", "off", or "0" are boolean `false`.
+  Anything else gives an error.
 * `appAuthc(req, res, next)`: Middleware for checking the bearer token of a
   request against the configured app keys (see below). Will give the correct
   authorization error if none is allowed. Use this in your routes!

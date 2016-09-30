@@ -431,7 +431,12 @@ class Microservice
 
   envBool: (env, key, def) ->
     if env[key]?
-      env[key].toLowerCase() in ["true", "yes", "on", "1"]
+      if env[key].toLowerCase() in ["true", "yes", "on", "1"]
+        true
+      else if env[key].toLowerCase() in ["false", "no", "off", "0"]
+        false
+      else
+        throw new Error("Not a boolean: #{env[key]}")
     else
       def
 
