@@ -289,6 +289,8 @@ class Microservice
     if req.log
       req.log.error {err: err}, "Error"
 
+    # Report server errors; these are something we have to fix
+
     if res.statusCode >= 500 and res.statusCode < 600
       @slackMessage 'error', "#{err.name}: #{err.message}", ":bomb:", (err) =>
         if err
