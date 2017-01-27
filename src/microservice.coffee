@@ -338,7 +338,7 @@ class Microservice
       callback err
 
   requestLogger: (req, res, next) ->
-    req.id = uuid.v4()
+    req.id = uuid.v1()
     weblog = req.app.log.child
       req_id: req.id
       url: req.originalUrl
