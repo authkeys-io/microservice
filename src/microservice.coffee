@@ -25,7 +25,7 @@ express = require 'express'
 bodyParser = require 'body-parser'
 {Databank, DatabankObject} = require 'databank'
 Logger = require 'bunyan'
-uuid = require 'node-uuid'
+uuid = require 'uuid'
 request = require 'request'
 
 HTTPError = require './httperror'
