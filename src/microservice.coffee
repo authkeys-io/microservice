@@ -337,6 +337,10 @@ class Microservice
     request.post options, (err, response, body) ->
       callback err
 
+  dontLog: (req, res, next) ->
+    req.dontLog = true
+    next()
+
   requestLogger: (req, res, next) ->
     req.id = uuid.v1()
     weblog = req.app.log.child
@@ -346,11 +350,13 @@ class Microservice
       component: "web"
     end = res.end
     req.log = weblog
+    req.dontLog = false
     res.end = (chunk, encoding) ->
       res.end = end
       res.end(chunk, encoding)
-      rec = {req: req, res: res}
-      weblog.info(rec)
+      if !req.dontLog
+        rec = {req: req, res: res}
+        weblog.info(rec)
     next()
 
   requestTimer: (req, res, next) =>

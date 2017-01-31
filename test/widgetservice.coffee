@@ -96,4 +96,7 @@ class WidgetService extends Microservice
 
     exp
 
+    exp.get '/health', @dontLog, (req, res, next) ->
+      res.json {status: "OK"}
+
 module.exports = WidgetService

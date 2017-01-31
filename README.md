@@ -124,6 +124,8 @@ These are some useful methods for microservice sub-classes to use.
   the 'type' modifier. If there is no specific hook for that type (see
   SLACK_HOOK_SOMETHING below for how to do that), it will be sent via the
   default hook.
+* `dontLog(req, res, next)`. Middleware to use when you don't want to have
+  a route logged. Useful for e.g. health-check URLs.
 
 Environment variables
 ---------------------
