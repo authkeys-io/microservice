@@ -7,14 +7,10 @@
   "license": "Apache-2.0",
   "main": "lib/microservice.js",
   "scripts": {
-    "test": "cake test",
-    "build": "cake build",
-    "prepublish": "cake build",
-    "clean": "cake clean"
+    "test": "vows test/*-test.js"
   },
   "files": [
     "lib",
-    "src",
     "test"
   ],
   "dependencies": {
