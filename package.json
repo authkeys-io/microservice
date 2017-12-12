@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "main": "lib/microservice.js",
   "scripts": {
-    "test": "vows test/*-test.js",
+    "test": "perjury test/*-test.js",
     "lint": "eslint lib/*.js test/*.js"
   },
   "files": [
