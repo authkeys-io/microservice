@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const {Databank, DatabankObject} = require('databank');
+const {Databank, DatabankObject} = require('databank')
 
-const Widget = DatabankObject.subClass('widget');
-Widget.count = 0;
+const Widget = DatabankObject.subClass('widget')
+Widget.count = 0
 
 Widget.schema = {
   pkey: 'id',
@@ -24,18 +24,17 @@ Widget.schema = {
     'createdAt',
     'updatedAt'
   ]
-};
+}
 
-Widget.beforeCreate = function(props, callback) {
+Widget.beforeCreate = function (props, callback) {
+  props.id = Widget.count
+  props.createdAt = (new Date()).toISOString()
+  return callback(null, props)
+}
 
-  props.id = Widget.count;
-  props.createdAt = (new Date()).toISOString();
-  return callback(null, props);
-};
+Widget.prototype.afterCreate = function (callback) {
+  Widget.count++
+  return callback(null)
+}
 
-Widget.prototype.afterCreate = function(callback) {
-  Widget.count++;
-  return callback(null);
-};
-
-module.exports = Widget;
+module.exports = Widget

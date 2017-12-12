@@ -12,39 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const http = require('http');
+const http = require('http')
 
-const _ = require('lodash');
-const vows = require('vows');
-const assert = require('assert');
-const async = require('async');
-const request = require('request');
+const _ = require('lodash')
+const vows = require('vows')
+const assert = require('assert')
+const async = require('async')
+const request = require('request')
 
-const microserviceBatch = require('./microservice-batch');
-const env = require('./env');
+const microserviceBatch = require('./microservice-batch')
+const env = require('./env')
 
-process.on('uncaughtException', err => console.error(err));
+process.on('uncaughtException', err => console.error(err))
 
 vows
   .describe('notify timing stats')
   .addBatch(microserviceBatch({
     'and we watch for timing information': {
-      topic(service, slack) {
+      topic (service, slack) {
         const giveUp = () => {
-          slack.removeAllListeners('request');
-          return this.callback(new Error("No timing message received"));
-        };
+          slack.removeAllListeners('request')
+          return this.callback(new Error('No timing message received'))
+        }
         slack.once('request', (req, res) => {
           if (req.url === '/timing') {
-            clearTimeout(to);
-            return this.callback(null);
+            clearTimeout(to)
+            return this.callback(null)
           }
-        });
-        var to = setTimeout(giveUp, parseInt(env.TIMING_INTERVAL, 10) * 2);
-        return undefined;
+        })
+        var to = setTimeout(giveUp, parseInt(env.TIMING_INTERVAL, 10) * 2)
+        return undefined
       },
-      'it works'(err) {
-        return assert.ifError(err);
+      'it works' (err) {
+        return assert.ifError(err)
       }
     }
-  })).export(module);
+  })).export(module)

@@ -12,110 +12,108 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const Microservice = require('../lib/microservice');
-const Widget = require('./widget');
+const Microservice = require('../lib/microservice')
+const Widget = require('./widget')
 
 class WidgetService extends Microservice {
-
-  getSchema() {
-    return {widget: Widget.schema};
+  getSchema () {
+    return {widget: Widget.schema}
   }
 
-  setupParams(exp) {
-
-    exp.param('code', function(req, res, next, id) {
-      req.errorCode = id;
-      return next();
-    });
+  setupParams (exp) {
+    exp.param('code', (req, res, next, id) => {
+      req.errorCode = id
+      return next()
+    })
 
     return exp.param('id', (req, res, next, id) =>
-      Widget.get(id, function(err, widget) {
+      Widget.get(id, (err, widget) => {
         if (err) {
-          return next(err);
+          return next(err)
         } else {
-          req.widget = widget;
-          return next();
+          req.widget = widget
+          return next()
         }
       })
-    );
+    )
   }
 
-  setupRoutes(exp) {
-
-    exp.get('/version', (req, res, next) => res.json({name: "widget", version: "0.1.0"}));
+  setupRoutes (exp) {
+    exp.get('/version', (req, res, next) => res.json({name: 'widget', version: '0.1.0'}))
 
     exp.post('/widget', this.appAuthc, (req, res, next) =>
-      Widget.create(req.body, function(err, widget) {
+      Widget.create(req.body, (err, widget) => {
         if (err) {
-          return next(err);
+          return next(err)
         } else {
-          return res.json(widget);
+          return res.json(widget)
         }
       })
-    );
+    )
 
-    exp.get('/widget', this.appAuthc, function(req, res, next) {
-      const allWidgets = [];
-      const addWidget = widget => allWidgets.push(widget);
-      return Widget.scan(addWidget, function(err) {
+    exp.get('/widget', this.appAuthc, (req, res, next) => {
+      const allWidgets = []
+      const addWidget = widget => allWidgets.push(widget)
+      return Widget.scan(addWidget, (err) => {
         if (err) {
-          return next(err);
+          return next(err)
         } else {
-          return res.json(allWidgets);
+          return res.json(allWidgets)
         }
-      });
-    });
+      })
+    })
 
-    exp.get('/widget/:id', this.appAuthc, (req, res, next) => res.json(req.widget));
+    exp.get('/widget/:id', this.appAuthc, (req, res, next) => res.json(req.widget))
 
-    exp.put('/widget/:id', this.appAuthc, function(req, res, next) {});
+    exp.put('/widget/:id', this.appAuthc, (req, res, next) => {})
 
-    exp.patch('/widget/:id', this.appAuthc, function(req, res, next) {
-      _.extend(req.widget, req.body);
-      return req.widget.save(function(err, saved) {
+    exp.patch('/widget/:id', this.appAuthc, (req, res, next) => {
+      _.extend(req.widget, req.body)
+      return req.widget.save((err, saved) => {
         if (err) {
-          return next(err);
+          return next(err)
         } else {
-          return res.json(saved);
+          return res.json(saved)
         }
-      });
-    });
+      })
+    })
 
     exp.delete('/widget/:id', this.appAuthc, (req, res, next) =>
-      req.widget.del(function(err) {
+      req.widget.del((err) => {
         if (err) {
-          return next(err);
+          return next(err)
         } else {
-          return res.json({status: "OK"});
-        }})
-  );
+          return res.json({status: 'OK'})
+        }
+      })
+    )
 
     // For generating slack messages
 
     exp.post('/message', this.appAuthc, (req, res, next) => {
-      const {type, message} = req.body;
-      return this.slackMessage(type, message, function(err) {
+      const {type, message} = req.body
+      return this.slackMessage(type, message, (err) => {
         if (err) {
-          return next(err);
+          return next(err)
         } else {
-          return res.json({type, message, status: "OK"});
+          return res.json({type, message, status: 'OK'})
         }
-    });
-  });
+      })
+    })
 
     // For causing errors
 
-    exp.get('/error/:code', this.appAuthc, function(req, res, next) {
-      const message = req.query.message || "Error";
-      const code = parseInt(req.errorCode, 10);
-      const err = new Microservice.HTTPError(message, code);
-      return next(err);
-    });
+    exp.get('/error/:code', this.appAuthc, (req, res, next) => {
+      const message = req.query.message || 'Error'
+      const code = parseInt(req.errorCode, 10)
+      const err = new Microservice.HTTPError(message, code)
+      return next(err)
+    })
 
-    exp;
+    exp
 
-    return exp.get('/health', this.dontLog, (req, res, next) => res.json({status: "OK"}));
+    return exp.get('/health', this.dontLog, (req, res, next) => res.json({status: 'OK'}))
   }
 }
 
-module.exports = WidgetService;
+module.exports = WidgetService

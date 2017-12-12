@@ -12,48 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const debug = require('debug')('microservice-start-stop-test');
+const debug = require('debug')('microservice-start-stop-test')
 
-const async = require('async');
-const _ = require('lodash');
-const vows = require('vows');
-const assert = require('assert');
-const request = require('request');
+const async = require('async')
+const _ = require('lodash')
+const vows = require('vows')
+const assert = require('assert')
+const request = require('request')
 
-const Widget = require('./widget');
-const WidgetService = require('./widgetservice');
+const Widget = require('./widget')
+const WidgetService = require('./widgetservice')
 
-const APP_KEY = "soothlesseecovezqislam";
+const APP_KEY = 'soothlesseecovezqislam'
 
-process.on('uncaughtException', err => process.stderr.write(require('util').inspect(err) + "\n"));
+process.on('uncaughtException', err => process.stderr.write(`${require('util').inspect(err)}\n`))
 
 vows
   .describe('start-stop-start-stop')
   .addBatch({
     'When we instantiate a microservice': {
-      topic() {
-        const { callback } = this;
+      topic () {
+        const { callback } = this
         try {
           const env = {
-            PORT: "2342",
-            HOSTNAME: "localhost",
-            DRIVER: "memory",
-            LOG_FILE: "/dev/null",
+            PORT: '2342',
+            HOSTNAME: 'localhost',
+            DRIVER: 'memory',
+            LOG_FILE: '/dev/null',
             APP_KEY_UNIT_TEST: APP_KEY
-          };
-          const service = new WidgetService(env);
-          callback(null, service);
+          }
+          const service = new WidgetService(env)
+          callback(null, service)
         } catch (err) {
-          callback(err);
+          callback(err)
         }
-        return undefined;
+        return undefined
       },
-      'it works'(err, service) {
-        return assert.ifError(err);
+      'it works' (err, service) {
+        return assert.ifError(err)
       },
       'and we start and stop the service a few times': {
-        topic(service) {
-          const { callback } = this;
+        topic (service) {
+          const { callback } = this
           async.waterfall([
             callback => service.start(callback),
             callback => service.stop(callback),
@@ -61,11 +61,11 @@ vows
             callback => service.stop(callback),
             callback => service.start(callback),
             callback => service.stop(callback)
-          ], callback);
-          return undefined;
+          ], callback)
+          return undefined
         },
-        'it works'(err) {
-          return assert.ifError(err);
+        'it works' (err) {
+          return assert.ifError(err)
         }
       }
-    }}).export(module);
+    }}).export(module)

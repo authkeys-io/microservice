@@ -15,19 +15,19 @@
 // limitations under the License.
 
 const env = {
-  SLACK_HOOK: "http://localhost:1516/default",
-  SLACK_HOOK_ERROR: "http://localhost:1516/error",
-  SLACK_HOOK_FOO: "http://localhost:1516/foo",
-  SLACK_HOOK_TIMING: "http://localhost:1516/timing",
-  PORT: "2342",
-  DRIVER: "memory",
-  HOSTNAME: "localhost",
-  LOG_FILE: "/dev/null",
-  APP_KEY_UNIT_TEST: "bract-else-aside-hug-torso",
-  APP_KEY_UNDERSCORE: "bract_else_aside_hug_torso",
-  APP_KEY_PERIOD: "bract.else.aside.hug.torso",
-  APP_KEY_SLASH: "bract/else/aside/hug/torso",
-  TIMING_INTERVAL: "2000"
-};
+  SLACK_HOOK: 'http://localhost:1516/default',
+  SLACK_HOOK_ERROR: 'http://localhost:1516/error',
+  SLACK_HOOK_FOO: 'http://localhost:1516/foo',
+  SLACK_HOOK_TIMING: 'http://localhost:1516/timing',
+  PORT: '2342',
+  DRIVER: 'memory',
+  HOSTNAME: 'localhost',
+  LOG_FILE: '/dev/null',
+  APP_KEY_UNIT_TEST: 'bract-else-aside-hug-torso',
+  APP_KEY_UNDERSCORE: 'bract_else_aside_hug_torso',
+  APP_KEY_PERIOD: 'bract.else.aside.hug.torso',
+  APP_KEY_SLASH: 'bract/else/aside/hug/torso',
+  TIMING_INTERVAL: '2000'
+}
 
-module.exports = env;
+module.exports = env

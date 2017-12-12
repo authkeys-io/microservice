@@ -12,61 +12,61 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const _ = require('lodash');
-const vows = require('vows');
-const assert = require('assert');
-const request = require('request');
+const _ = require('lodash')
+const vows = require('vows')
+const assert = require('assert')
+const request = require('request')
 
-const Widget = require('./widget');
-const WidgetService = require('./widgetservice');
+const Widget = require('./widget')
+const WidgetService = require('./widgetservice')
 
 class BadWidgetService extends WidgetService {
-  getSchema() {
-    return null;
+  getSchema () {
+    return null
   }
 }
 
-process.on('uncaughtException', err => console.error(err));
+process.on('uncaughtException', err => console.error(err))
 
 vows
   .describe('test for microservices without a getSchema()')
   .addBatch({
     'When we instantiate a microservice without a getSchema() method': {
-      topic() {
-        const { callback } = this;
+      topic () {
+        const { callback } = this
         try {
           const env = {
-            PORT: "2342",
-            HOSTNAME: "localhost",
-            DRIVER: "memory",
-            LOG_FILE: "/dev/null"
-          };
-          const service = new BadWidgetService(env);
-          callback(null, service);
+            PORT: '2342',
+            HOSTNAME: 'localhost',
+            DRIVER: 'memory',
+            LOG_FILE: '/dev/null'
+          }
+          const service = new BadWidgetService(env)
+          callback(null, service)
         } catch (err) {
-          callback(err);
+          callback(err)
         }
-        return undefined;
+        return undefined
       },
-      'it works'(err, service) {
-        return assert.ifError(err);
+      'it works' (err, service) {
+        return assert.ifError(err)
       },
       'and we start the service': {
-        topic(service) {
-          const { callback } = this;
-          service.start(function(err) {
+        topic (service) {
+          const { callback } = this
+          service.start((err) => {
             if (err) {
-              return callback(null, err);
+              return callback(null, err)
             } else {
-              return callback(new Error("Unexpected success"));
+              return callback(new Error('Unexpected success'))
             }
-          });
-          return undefined;
+          })
+          return undefined
         },
-        'it fails correctly'(err, received) {
-          assert.ifError(err);
-          const msg = "No schema defined for this microservice class";
-          return assert.equal(received.message, msg);
+        'it fails correctly' (err, received) {
+          assert.ifError(err)
+          const msg = 'No schema defined for this microservice class'
+          return assert.equal(received.message, msg)
         }
       }
-    }}).export(module);
+    }}).export(module)

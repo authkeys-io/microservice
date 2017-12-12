@@ -13,75 +13,75 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const http = require('http');
+const http = require('http')
 
-const _ = require('lodash');
-const vows = require('vows');
-const assert = require('assert');
-const async = require('async');
-const request = require('request');
+const _ = require('lodash')
+const vows = require('vows')
+const assert = require('assert')
+const async = require('async')
+const request = require('request')
 
-const env = require('./env');
+const env = require('./env')
 
-process.on('uncaughtException', err => console.error(err));
+process.on('uncaughtException', err => console.error(err))
 
-const microserviceBatch = function(rest) {
+const microserviceBatch = function (rest) {
   const base = {
     'When we set up a mock Slack server': {
-      topic() {
-        const { callback } = this;
-        const slack = http.createServer(function(req, res) {
+      topic () {
+        const { callback } = this
+        const slack = http.createServer((req, res) => {
           res.writeHead(200, {
             'Content-Type': 'text/plain',
             'Content-Length': '0'
           }
-          );
-          return res.end();
-        });
-        slack.listen(1516, () => callback(null, slack));
-        return undefined;
+          )
+          return res.end()
+        })
+        slack.listen(1516, () => callback(null, slack))
+        return undefined
       },
-      'it works'(err, slack) {
-        return assert.ifError(err);
+      'it works' (err, slack) {
+        return assert.ifError(err)
       },
-      teardown(slack) {
-        const { callback } = this;
-        slack.once('close', () => callback(null));
-        slack.close();
-        return undefined;
+      teardown (slack) {
+        const { callback } = this
+        slack.once('close', () => callback(null))
+        slack.close()
+        return undefined
       },
       'and we start a WidgetService': {
-        topic() {
-          const WidgetService = require('./widgetservice');
-          const service = new WidgetService(env);
+        topic () {
+          const WidgetService = require('./widgetservice')
+          const service = new WidgetService(env)
           service.start(err => {
             if (err) {
-              return this.callback(err);
+              return this.callback(err)
             } else {
-              return this.callback(null, service);
+              return this.callback(null, service)
             }
-          });
-          return undefined;
+          })
+          return undefined
         },
-        'it works'(err, service) {
-          return assert.ifError(err);
+        'it works' (err, service) {
+          return assert.ifError(err)
         },
-        teardown(service) {
-          const { callback } = this;
-          service.stop(err => callback(null));
-          return undefined;
+        teardown (service) {
+          const { callback } = this
+          service.stop(err => callback(null))
+          return undefined
         }
       }
     }
-  };
+  }
 
-  const batch = _.clone(base);
+  const batch = _.clone(base)
 
-  _.assign(batch['When we set up a mock Slack server']['and we start a WidgetService'], rest);
+  _.assign(batch['When we set up a mock Slack server']['and we start a WidgetService'], rest)
 
-  return batch;
-};
+  return batch
+}
 
-microserviceBatch.appKey = env.APP_KEY_UNIT_TEST;
+microserviceBatch.appKey = env.APP_KEY_UNIT_TEST
 
-module.exports = microserviceBatch;
+module.exports = microserviceBatch

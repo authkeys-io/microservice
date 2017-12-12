@@ -12,157 +12,157 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const _ = require('lodash');
-const vows = require('vows');
-const assert = require('assert');
-const request = require('request');
+const _ = require('lodash')
+const vows = require('vows')
+const assert = require('assert')
+const request = require('request')
 
-const Widget = require('./widget');
-const WidgetService = require('./widgetservice');
+const Widget = require('./widget')
+const WidgetService = require('./widgetservice')
 
-const microserviceBatch = require('./microservice-batch');
-const env = require('./env');
+const microserviceBatch = require('./microservice-batch')
+const env = require('./env')
 
-const BAD_KEY = "sceneaqethyl1776podia";
+const BAD_KEY = 'sceneaqethyl1776podia'
 
-process.on('uncaughtException', err => process.stderr.write(require('util').inspect(err) + "\n"));
+process.on('uncaughtException', err => process.stderr.write(`${require('util').inspect(err)}\n`))
 
-const authfail = function(key) {
+const authfail = function (key) {
   const batch = {
-    topic() {
-      const { callback } = this;
+    topic () {
+      const { callback } = this
       const options = {
         url: 'http://localhost:2342/widget',
         headers: {
           authorization: `Bearer ${key}`
         }
-      };
-      request.get(options, function(err, response, body) {
-        const wa = __guard__(response != null ? response.headers : undefined, x => x['www-authenticate']);
+      }
+      request.get(options, (err, response, body) => {
+        const wa = __guard__(response != null ? response.headers : undefined, x => x['www-authenticate'])
         if (err) {
-          return callback(err);
+          return callback(err)
         } else if (response.statusCode !== 401) {
-          return callback(new Error(`Unexpected code ${response.statusCode}`));
-        } else if (wa !== "Bearer") {
-          return callback(new Error(`Wrong WWW-Authenticate header: ${wa}`));
+          return callback(new Error(`Unexpected code ${response.statusCode}`))
+        } else if (wa !== 'Bearer') {
+          return callback(new Error(`Wrong WWW-Authenticate header: ${wa}`))
         } else {
-          return callback(null);
+          return callback(null)
         }
-      });
-      return undefined;
+      })
+      return undefined
     },
-    'it fails correctly'(err) {
-      return assert.ifError(err);
+    'it fails correctly' (err) {
+      return assert.ifError(err)
     }
-  };
-  return batch;
-};
+  }
+  return batch
+}
 
-const authsucc = function(key) {
+const authsucc = function (key) {
   const batch = {
-    topic() {
-      const { callback } = this;
+    topic () {
+      const { callback } = this
       const options = {
         url: 'http://localhost:2342/widget',
         headers: {
           authorization: `Bearer ${key}`
         }
-      };
-      request.get(options, function(err, response, body) {
+      }
+      request.get(options, (err, response, body) => {
         if (err) {
-          return callback(err);
+          return callback(err)
         } else if (response.statusCode !== 200) {
-          return callback(new Error(`Unexpected code ${response.statusCode}`));
+          return callback(new Error(`Unexpected code ${response.statusCode}`))
         } else {
-          const results = JSON.parse(body);
-          return callback(null, results);
+          const results = JSON.parse(body)
+          return callback(null, results)
         }
-      });
-      return undefined;
+      })
+      return undefined
     },
-    'it works'(err, results) {
-      return assert.ifError(err);
+    'it works' (err, results) {
+      return assert.ifError(err)
     }
-  };
-  return batch;
-};
+  }
+  return batch
+}
 
-const qsucc = function(key) {
+const qsucc = function (key) {
   const batch = {
-    topic() {
-      const { callback } = this;
+    topic () {
+      const { callback } = this
       const options =
-        {url: `http://localhost:2342/widget?access_token=${key}`};
-      request.get(options, function(err, response, body) {
+        {url: `http://localhost:2342/widget?access_token=${key}`}
+      request.get(options, (err, response, body) => {
         if (err) {
-          return callback(err);
+          return callback(err)
         } else if (response.statusCode !== 200) {
-          return callback(new Error(`Unexpected code ${response.statusCode}`));
+          return callback(new Error(`Unexpected code ${response.statusCode}`))
         } else {
-          const results = JSON.parse(body);
-          return callback(null, results);
+          const results = JSON.parse(body)
+          return callback(null, results)
         }
-      });
-      return undefined;
+      })
+      return undefined
     },
-    'it works'(err, widgets) {
-      return assert.ifError(err);
+    'it works' (err, widgets) {
+      return assert.ifError(err)
     },
-    'it is an array'(err, widgets) {
-      assert.ifError(err);
-      return assert.isArray(widgets);
+    'it is an array' (err, widgets) {
+      assert.ifError(err)
+      return assert.isArray(widgets)
     }
-  };
-  return batch;
-};
+  }
+  return batch
+}
 
-const qfail = function(key) {
+const qfail = function (key) {
   const batch = {
-    topic() {
-      const { callback } = this;
+    topic () {
+      const { callback } = this
       const options =
-        {url: `http://localhost:2342/widget?access_token=${key}`};
-      request.get(options, function(err, response, body) {
-        const wa = __guard__(response != null ? response.headers : undefined, x => x['www-authenticate']);
+        {url: `http://localhost:2342/widget?access_token=${key}`}
+      request.get(options, (err, response, body) => {
+        const wa = __guard__(response != null ? response.headers : undefined, x => x['www-authenticate'])
         if (err) {
-          return callback(err);
+          return callback(err)
         } else if (response.statusCode !== 401) {
-          return callback(new Error(`Unexpected code ${response.statusCode}`));
-        } else if (wa !== "Bearer") {
-          return callback(new Error(`Wrong WWW-Authenticate header: ${wa}`));
+          return callback(new Error(`Unexpected code ${response.statusCode}`))
+        } else if (wa !== 'Bearer') {
+          return callback(new Error(`Wrong WWW-Authenticate header: ${wa}`))
         } else {
-          return callback(null);
+          return callback(null)
         }
-      });
-      return undefined;
+      })
+      return undefined
     },
-    'it fails correctly'(err) {
-      return assert.ifError(err);
+    'it fails correctly' (err) {
+      return assert.ifError(err)
     }
-  };
-  return batch;
-};
+  }
+  return batch
+}
 
 vows
   .describe('authentication')
   .addBatch(microserviceBatch({
     'and we request the list of widgets without any auth': {
-      topic() {
-        const { callback } = this;
-        const url = 'http://localhost:2342/widget';
-        request.get(url, function(err, response, body) {
+      topic () {
+        const { callback } = this
+        const url = 'http://localhost:2342/widget'
+        request.get(url, (err, response, body) => {
           if (err) {
-            return callback(err);
+            return callback(err)
           } else if (response.statusCode !== 401) {
-            return callback(new Error(`Unexpected code ${response.statusCode}`));
+            return callback(new Error(`Unexpected code ${response.statusCode}`))
           } else {
-            return callback(null);
+            return callback(null)
           }
-        });
-        return undefined;
+        })
+        return undefined
       },
-      'it fails correctly'(err) {
-        return assert.ifError(err);
+      'it fails correctly' (err) {
+        return assert.ifError(err)
       }
     },
     'and we request the list of widgets with bad Authorization header':
@@ -185,8 +185,8 @@ vows
       authsucc(env.APP_KEY_SLASH),
     'and we use a key with slashes as an access_token parameter':
       qsucc(env.APP_KEY_SLASH)
-  })).export(module);
+  })).export(module)
 
-function __guard__(value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+function __guard__ (value, transform) {
+  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
 }
