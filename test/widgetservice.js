@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const _ = require('lodash')
+
 const Microservice = require('../lib/microservice')
 const Widget = require('./widget')
 
@@ -110,9 +112,9 @@ class WidgetService extends Microservice {
       return next(err)
     })
 
-    exp
+    exp.get('/health', this.dontLog, (req, res, next) => res.json({status: 'OK'}))
 
-    return exp.get('/health', this.dontLog, (req, res, next) => res.json({status: 'OK'}))
+    return exp
   }
 }
 

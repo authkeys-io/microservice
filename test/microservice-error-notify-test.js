@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const http = require('http')
-
-const _ = require('lodash')
 const vows = require('vows')
 const assert = require('assert')
 const async = require('async')
@@ -86,7 +83,8 @@ vows
                   return callback(null)
                 }
               }
-              return to = setTimeout(checkPinged, 4000)
+              to = setTimeout(checkPinged, 4000)
+              return to
             },
             function (callback) {
               const options = {

@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const http = require('http')
-
-const _ = require('lodash')
 const vows = require('vows')
 const assert = require('assert')
-const async = require('async')
-const request = require('request')
 
 const microserviceBatch = require('./microservice-batch')
 const env = require('./env')
@@ -40,7 +35,7 @@ vows
             return this.callback(null)
           }
         })
-        var to = setTimeout(giveUp, parseInt(env.TIMING_INTERVAL, 10) * 2)
+        const to = setTimeout(giveUp, parseInt(env.TIMING_INTERVAL, 10) * 2)
         return undefined
       },
       'it works' (err) {

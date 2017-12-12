@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const _ = require('lodash')
 const vows = require('vows')
 const assert = require('assert')
-const request = require('request')
 
-const Widget = require('./widget')
 const WidgetService = require('./widgetservice')
 
 class BadWidgetService extends WidgetService {

@@ -12,15 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const debug = require('debug')('microservice-start-stop-test')
-
 const async = require('async')
-const _ = require('lodash')
 const vows = require('vows')
 const assert = require('assert')
-const request = require('request')
 
-const Widget = require('./widget')
 const WidgetService = require('./widgetservice')
 
 const APP_KEY = 'soothlesseecovezqislam'

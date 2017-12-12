@@ -16,10 +16,8 @@
 const http = require('http')
 
 const _ = require('lodash')
-const vows = require('vows')
+const vows = require('vows') // eslint-disable-line no-unused-vars
 const assert = require('assert')
-const async = require('async')
-const request = require('request')
 
 const env = require('./env')
 
@@ -68,7 +66,13 @@ const microserviceBatch = function (rest) {
         },
         teardown (service) {
           const { callback } = this
-          service.stop(err => callback(null))
+          service.stop(err => {
+            if (err) {
+              callback(err)
+            } else {
+              callback(null)
+            }
+          })
           return undefined
         }
       }

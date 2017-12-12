@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const http = require('http')
-
-const _ = require('lodash')
 const vows = require('vows')
 const assert = require('assert')
-const async = require('async')
 const request = require('request')
 const debug = require('debug')('microservice:microservice-dont-log-test')
 
