@@ -42,7 +42,7 @@ vows
           if (err) {
             return callback(err);
           } else if (sc !== 404) {
-            return callback(new Error(`Unexpected status code: ${sc}`));
+            return callback(new Error(`Unexpected status code: ${sc} (${body})`));
           } else if ((ct == null)) {
             return callback(new Error("No content type for response"));
           } else if (!ct.match(/^application\/json/)) {
