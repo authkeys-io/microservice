@@ -13,8 +13,8 @@
 // limitations under the License.
 
 const async = require('async')
-const vows = require('vows')
-const assert = require('assert')
+const vows = require('perjury')
+const {assert} = vows
 
 const WidgetService = require('./widgetservice')
 

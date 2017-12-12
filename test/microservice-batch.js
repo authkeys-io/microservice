@@ -16,8 +16,8 @@
 const http = require('http')
 
 const _ = require('lodash')
-const vows = require('vows') // eslint-disable-line no-unused-vars
-const assert = require('assert')
+const vows = require('perjury') // eslint-disable-line no-unused-vars
+const {assert} = vows
 
 const env = require('./env')
 

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const vows = require('vows')
-const assert = require('assert')
+const vows = require('perjury')
+const {assert} = vows
 const request = require('request')
 
 const microserviceBatch = require('./microservice-batch')
