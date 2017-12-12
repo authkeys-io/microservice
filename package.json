@@ -18,19 +18,19 @@
     "test"
   ],
   "dependencies": {
-    "async": "^2.1.4",
-    "body-parser": "^1.16.0",
-    "bunyan": "^1.8.5",
+    "async": "^2.6.0",
+    "body-parser": "^1.18.2",
+    "bunyan": "^1.8.12",
     "databank": "^1.0.1",
-    "debug": "^2.6.0",
-    "express": "^4.14.0",
+    "debug": "^3.1.0",
+    "express": "^4.16.2",
     "lodash": "^4.17.4",
-    "request": "^2.79.0",
-    "uuid": "^3.0.1"
+    "request": "^2.83.0",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
-    "coffee-script": "^1.10.0",
-    "glob": "^7.0.5",
+    "coffee-script": "^1.12.7",
+    "glob": "^7.1.2",
     "vows": "^0.8.1"
   },
   "repository": {
