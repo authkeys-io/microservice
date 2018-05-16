@@ -85,8 +85,6 @@ Methods to overload
 
 These are methods that sub-classes of Microservice should overload.
 
-* `getName()`. Return the name of the microservice. Used for error reporting and
-  the like.
 * `getSchema()`. Return the Databank schema for the microservice. See
   https://github.com/e14n/databank#schemata for the format.
 * `setupMiddleware(exp)`. If you have any custom middleware to set up for the
@@ -100,6 +98,13 @@ These are methods that sub-classes of Microservice should overload.
 * `stopCustom(callback)`. If you need to do something before stopping (what?),
   do it here.
 * `environmentToConfig(env)`. Convert the environment to a config object.
+
+These ones might be useful to overload if they're not working correctly.
+
+* `getName()`. Return the name of the microservice. Used for error reporting and
+  the like. Default implementation guesses from environment variables, so if
+  you use `npm run start` for your microservice, you should be fine.
+* `getVersion()`. Ditto, but for the version.
 
 Utility methods
 ---------------

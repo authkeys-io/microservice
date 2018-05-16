@@ -57,6 +57,35 @@ vows
         assert.isObject(service)
         return assert.isFunction(service.stop)
       },
+      'it has a getName() method' (err, service) {
+        assert.ifError(err)
+        assert.isObject(service)
+        assert.isFunction(service.getName)
+      },
+      'it has a getVersion() method' (err, service) {
+        assert.ifError(err)
+        assert.isObject(service)
+        assert.isFunction(service.getVersion)
+      },
+      'and we get the name': {
+        topic (service) {
+          return service.getName()
+        },
+        'it is "microservice"' (err, name) {
+          assert.ifError(err)
+          assert.notEqual(name, '<unknown microservice>')
+        }
+      },
+      'and we get the version': {
+        topic (service) {
+          return service.getVersion()
+        },
+        'it is defined' (err, version) {
+          assert.ifError(err)
+          assert.isString(version)
+          assert.notEqual(version, '<unknown version>')
+        }
+      },
       'and we start the service': {
         topic (service) {
           const { callback } = this
