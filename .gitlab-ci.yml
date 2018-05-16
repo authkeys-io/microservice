@@ -1,0 +1,32 @@
+image: node:9-alpine
+
+stages:
+  - lint
+  - test
+  - release
+
+before_script:
+  - npm install
+
+cache:
+  paths:
+    - node_modules/
+
+lint:
+  stage: lint
+  script:
+    - npm run lint
+
+test:
+  stage: test
+  script:
+    - npm run test
+
+release:
+  stage: release
+  only:
+    - tags
+    - triggers
+  script:
+    - echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc
+    - npm publish
