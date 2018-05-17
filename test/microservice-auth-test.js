@@ -38,7 +38,7 @@ const authfail = function (key) {
         if (err) {
           return callback(err)
         } else if (response.statusCode !== 401) {
-          return callback(new Error(`Unexpected code ${response.statusCode}`))
+          return callback(new Error(`Unexpected code ${response.statusCode}: ${body}`))
         } else if (wa !== 'Bearer') {
           return callback(new Error(`Wrong WWW-Authenticate header: ${wa}`))
         } else {
