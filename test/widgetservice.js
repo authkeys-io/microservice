@@ -43,7 +43,7 @@ class WidgetService extends Microservice {
   setupRoutes (exp) {
     exp.get('/version', (req, res, next) => res.json({name: 'widget', version: '0.1.0'}))
 
-    exp.post('/widget', this.appAuthc.bind(this), (req, res, next) =>
+    exp.post('/widget', Microservice.appAuthc, (req, res, next) =>
       Widget.create(req.body, (err, widget) => {
         if (err) {
           return next(err)
@@ -53,7 +53,7 @@ class WidgetService extends Microservice {
       })
     )
 
-    exp.get('/widget', this.appAuthc.bind(this), (req, res, next) => {
+    exp.get('/widget', Microservice.appAuthc, (req, res, next) => {
       const allWidgets = []
       const addWidget = widget => allWidgets.push(widget)
       return Widget.scan(addWidget, (err) => {
@@ -65,11 +65,11 @@ class WidgetService extends Microservice {
       })
     })
 
-    exp.get('/widget/:id', this.appAuthc.bind(this), (req, res, next) => res.json(req.widget))
+    exp.get('/widget/:id', Microservice.appAuthc, (req, res, next) => res.json(req.widget))
 
-    exp.put('/widget/:id', this.appAuthc.bind(this), (req, res, next) => {})
+    exp.put('/widget/:id', Microservice.appAuthc, (req, res, next) => {})
 
-    exp.patch('/widget/:id', this.appAuthc.bind(this), (req, res, next) => {
+    exp.patch('/widget/:id', Microservice.appAuthc, (req, res, next) => {
       _.extend(req.widget, req.body)
       return req.widget.save((err, saved) => {
         if (err) {
@@ -80,7 +80,7 @@ class WidgetService extends Microservice {
       })
     })
 
-    exp.delete('/widget/:id', this.appAuthc.bind(this), (req, res, next) =>
+    exp.delete('/widget/:id', Microservice.appAuthc, (req, res, next) =>
       req.widget.del((err) => {
         if (err) {
           return next(err)
@@ -92,7 +92,7 @@ class WidgetService extends Microservice {
 
     // For generating slack messages
 
-    exp.post('/message', this.appAuthc.bind(this), (req, res, next) => {
+    exp.post('/message', Microservice.appAuthc, (req, res, next) => {
       const {type, message} = req.body
       return this.slackMessage(type, message, (err) => {
         if (err) {
@@ -105,14 +105,14 @@ class WidgetService extends Microservice {
 
     // For causing errors
 
-    exp.get('/error/:code', this.appAuthc.bind(this), (req, res, next) => {
+    exp.get('/error/:code', Microservice.appAuthc, (req, res, next) => {
       const message = req.query.message || 'Error'
       const code = parseInt(req.errorCode, 10)
       const err = new Microservice.HTTPError(message, code)
       return next(err)
     })
 
-    exp.get('/health', this.dontLog, (req, res, next) => res.json({status: 'OK'}))
+    exp.get('/health', Microservice.dontLog, (req, res, next) => res.json({status: 'OK'}))
 
     return exp
   }
