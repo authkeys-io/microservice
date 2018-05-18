@@ -25,65 +25,68 @@ class WidgetService extends Microservice {
   setupParams (exp) {
     exp.param('code', (req, res, next, id) => {
       req.errorCode = id
-      return next()
+      setImmediate(next)
     })
 
     return exp.param('id', (req, res, next, id) =>
       Widget.get(id, (err, widget) => {
         if (err) {
-          return next(err)
+          setImmediate(next, err)
         } else {
           req.widget = widget
-          return next()
+          setImmediate(next)
         }
       })
     )
   }
 
   setupRoutes (exp) {
+    const appAuthc = this.appAuthc.bind(this)
+    const dontLog = this.dontLog.bind(this)
+
     exp.get('/version', (req, res, next) => res.json({name: 'widget', version: '0.1.0'}))
 
-    exp.post('/widget', Microservice.appAuthc, (req, res, next) =>
+    exp.post('/widget', appAuthc, (req, res, next) =>
       Widget.create(req.body, (err, widget) => {
         if (err) {
-          return next(err)
+          setImmediate(next, err)
         } else {
           return res.json(widget)
         }
       })
     )
 
-    exp.get('/widget', Microservice.appAuthc, (req, res, next) => {
+    exp.get('/widget', appAuthc, (req, res, next) => {
       const allWidgets = []
       const addWidget = widget => allWidgets.push(widget)
       return Widget.scan(addWidget, (err) => {
         if (err) {
-          return next(err)
+          setImmediate(next, err)
         } else {
           return res.json(allWidgets)
         }
       })
     })
 
-    exp.get('/widget/:id', Microservice.appAuthc, (req, res, next) => res.json(req.widget))
+    exp.get('/widget/:id', appAuthc, (req, res, next) => res.json(req.widget))
 
-    exp.put('/widget/:id', Microservice.appAuthc, (req, res, next) => {})
+    exp.put('/widget/:id', appAuthc, (req, res, next) => {})
 
-    exp.patch('/widget/:id', Microservice.appAuthc, (req, res, next) => {
+    exp.patch('/widget/:id', appAuthc, (req, res, next) => {
       _.extend(req.widget, req.body)
       return req.widget.save((err, saved) => {
         if (err) {
-          return next(err)
+          setImmediate(next, err)
         } else {
           return res.json(saved)
         }
       })
     })
 
-    exp.delete('/widget/:id', Microservice.appAuthc, (req, res, next) =>
+    exp.delete('/widget/:id', appAuthc, (req, res, next) =>
       req.widget.del((err) => {
         if (err) {
-          return next(err)
+          setImmediate(next, err)
         } else {
           return res.json({status: 'OK'})
         }
@@ -92,11 +95,11 @@ class WidgetService extends Microservice {
 
     // For generating slack messages
 
-    exp.post('/message', Microservice.appAuthc, (req, res, next) => {
+    exp.post('/message', appAuthc, (req, res, next) => {
       const {type, message} = req.body
       return this.slackMessage(type, message, (err) => {
         if (err) {
-          return next(err)
+          setImmediate(next, err)
         } else {
           return res.json({type, message, status: 'OK'})
         }
@@ -105,14 +108,14 @@ class WidgetService extends Microservice {
 
     // For causing errors
 
-    exp.get('/error/:code', Microservice.appAuthc, (req, res, next) => {
+    exp.get('/error/:code', appAuthc, (req, res, next) => {
       const message = req.query.message || 'Error'
       const code = parseInt(req.errorCode, 10)
       const err = new Microservice.HTTPError(message, code)
-      return next(err)
+      setImmediate(next, err)
     })
 
-    exp.get('/health', Microservice.dontLog, (req, res, next) => res.json({status: 'OK'}))
+    exp.get('/health', dontLog, (req, res, next) => res.json({status: 'OK'}))
 
     return exp
   }
