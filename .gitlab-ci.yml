@@ -1,4 +1,4 @@
-image: node:9-alpine
+image: node:10-alpine
 
 stages:
   - lint
@@ -16,17 +16,22 @@ lint:
   stage: lint
   script:
     - npm run lint
+  tags:
+    - dind
 
 test:
   stage: test
   script:
     - npm run test
+  tags:
+    - dind
 
 release:
   stage: release
   only:
     - tags
-    - triggers
   script:
     - echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc
     - npm publish
+  tags:
+    - dind
