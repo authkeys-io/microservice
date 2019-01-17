@@ -1,4 +1,8 @@
-image: node:9-alpine
+image: node:10-alpine
+
+variables:
+  GIT_STRATEGY: clone
+  NPM_TOKEN: $NPM_TOKEN
 
 stages:
   - lint
@@ -16,17 +20,22 @@ lint:
   stage: lint
   script:
     - npm run lint
+  tags:
+    - dind
 
 test:
   stage: test
   script:
     - npm run test
+  tags:
+    - dind
 
 release:
   stage: release
   only:
     - tags
-    - triggers
   script:
     - echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc
-    - npm publish
+    - if [ ${CI_COMMIT_TAG:0:1} = "v" ]; then npm publish --access public; fi
+  tags:
+    - dind
