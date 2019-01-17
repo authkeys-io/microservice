@@ -1,7 +1,7 @@
 {
-  "name": "@fuzzy-ai/microservice",
-  "version": "1.3.0",
-  "description": "Simple microservice class used by Fuzzy.ai",
+  "name": "@authkeys-ai/microservice",
+  "version": "1.3.2",
+  "description": "Simple microservice class used by Authkeys.io",
   "homepage": "http://github.com/fuzzy-ai/microservice",
   "bugs": "https://github.com/fuzzy-ai/microservice/issues",
   "license": "Apache-2.0",
@@ -37,6 +37,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/fuzzy-ai/microservice.git"
+    "url": "https://git.fluidware.it/authkeys/microservice.git"
   }
 }
