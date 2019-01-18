@@ -35,8 +35,9 @@ release:
   only:
     - tags
   script:
+    - npm --version
+    - echo $NPM_TOKEN
     - echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc
-    - cat .npmrc
     - npm publish
   tags:
     - dind
