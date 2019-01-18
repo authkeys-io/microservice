@@ -38,6 +38,6 @@ release:
     - npm --version
     - echo $NPM_TOKEN
     - echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc
-    - npm publish
+    - if [ ${NPM_TOKEN:0:1} = "v" ]; then npm publish fi
   tags:
     - dind
