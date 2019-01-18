@@ -27,13 +27,16 @@
   },
   "devDependencies": {
     "eslint": "^4.13.1",
+    "eslint-config-prettier": "^2.3.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-prettier": "^2.1.2",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
     "glob": "^7.1.2",
-    "perjury": "^1.1.0"
+    "perjury": "^1.1.0",
+    "prettier": "^1.5.3"
   },
   "repository": {
     "type": "git",
