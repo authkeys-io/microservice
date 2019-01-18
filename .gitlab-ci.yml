@@ -1,5 +1,9 @@
 image: node:10-alpine
 
+variables:
+  GIT_STRATEGY: clone
+  NPM_TOKEN: $NPM_TOKEN
+
 stages:
   - lint
   - test
