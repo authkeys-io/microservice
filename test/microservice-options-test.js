@@ -12,43 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const vows = require('perjury')
-const {assert} = vows
-const request = require('request')
+const vows = require('perjury');
+const { assert } = vows;
+const request = require('request');
 
-const microserviceBatch = require('./microservice-batch')
+const microserviceBatch = require('./microservice-batch');
 
-process.on('uncaughtException', err => console.error(err))
+process.on('uncaughtException', err => console.error(err));
 
 vows
   .describe('Use OPTIONS on an endpoint')
-  .addBatch(microserviceBatch({
-    'and we use OPTIONS on an URL': {
-      topic () {
-        const { callback } = this
-        const options = {
-          method: 'OPTIONS',
-          url: 'http://localhost:2342/version',
-          headers: {
-            authorization: `Bearer ${microserviceBatch.appKey}`
-          }
+  .addBatch(
+    microserviceBatch({
+      'and we use OPTIONS on an URL': {
+        topic() {
+          const { callback } = this;
+          const options = {
+            method: 'OPTIONS',
+            url: 'http://localhost:2342/version',
+            headers: {
+              authorization: `Bearer ${microserviceBatch.appKey}`
+            }
+          };
+          request(options, (err, response, body) => {
+            const sc = response != null ? response.statusCode : undefined;
+            if (err) {
+              return callback(err);
+            } else if (sc !== 200) {
+              return callback(new Error(`Unexpected status code: ${sc}`));
+            } else {
+              return callback(null, response.headers.allow, body);
+            }
+          });
+          return undefined;
+        },
+        'it works'(err, allow, body) {
+          assert.ifError(err);
+          assert.equal(allow, 'GET,HEAD');
+          return assert.equal(body, 'GET,HEAD');
         }
-        request(options, (err, response, body) => {
-          const sc = response != null ? response.statusCode : undefined
-          if (err) {
-            return callback(err)
-          } else if (sc !== 200) {
-            return callback(new Error(`Unexpected status code: ${sc}`))
-          } else {
-            return callback(null, response.headers.allow, body)
-          }
-        })
-        return undefined
-      },
-      'it works' (err, allow, body) {
-        assert.ifError(err)
-        assert.equal(allow, 'GET,HEAD')
-        return assert.equal(body, 'GET,HEAD')
       }
-    }
-  })).export(module)
+    })
+  )
+  .export(module);

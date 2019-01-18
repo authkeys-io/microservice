@@ -28,6 +28,6 @@ const env = {
   APP_KEY_PERIOD: 'bract.else.aside.hug.torso',
   APP_KEY_SLASH: 'bract/else/aside/hug/torso',
   TIMING_INTERVAL: '2000'
-}
+};
 
-module.exports = env
+module.exports = env;

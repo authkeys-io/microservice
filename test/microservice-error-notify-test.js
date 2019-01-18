@@ -12,108 +12,117 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const vows = require('perjury')
-const {assert} = vows
-const async = require('async')
-const request = require('request')
+const vows = require('perjury');
+const { assert } = vows;
+const async = require('async');
+const request = require('request');
 
-const microserviceBatch = require('./microservice-batch')
+const microserviceBatch = require('./microservice-batch');
 
-process.on('uncaughtException', err => console.error(err))
+process.on('uncaughtException', err => console.error(err));
 
 vows
   .describe('notify on error')
-  .addBatch(microserviceBatch({
-    'and we generate a server error': {
-      topic (service, slack) {
-        const { callback } = this
-        async.parallel([
-          callback =>
-            slack.once('request', (req, res) => {
-              if (req.url === '/error') {
-                return callback(null)
-              } else {
-                return callback(new Error(`Should ping /error, got ${req.url}`))
+  .addBatch(
+    microserviceBatch({
+      'and we generate a server error': {
+        topic(service, slack) {
+          const { callback } = this;
+          async.parallel(
+            [
+              callback =>
+                slack.once('request', (req, res) => {
+                  if (req.url === '/error') {
+                    return callback(null);
+                  } else {
+                    return callback(new Error(`Should ping /error, got ${req.url}`));
+                  }
+                }),
+              function(callback) {
+                const options = {
+                  url: 'http://localhost:2342/error/500?message=Server+error',
+                  headers: {
+                    authorization: `Bearer ${microserviceBatch.appKey}`
+                  }
+                };
+                return request.get(options, (err, response, body) => {
+                  if (err) {
+                    return callback(err);
+                  } else {
+                    const results = JSON.parse(body);
+                    return callback(null, results);
+                  }
+                });
               }
-            }),
-          function (callback) {
-            const options = {
-              url: 'http://localhost:2342/error/500?message=Server+error',
-              headers: {
-                authorization: `Bearer ${microserviceBatch.appKey}`
-              }
-            }
-            return request.get(options, (err, response, body) => {
+            ],
+            err => {
               if (err) {
-                return callback(err)
+                return callback(err);
               } else {
-                const results = JSON.parse(body)
-                return callback(null, results)
+                return callback(null);
               }
-            })
-          }
-        ], (err) => {
-          if (err) {
-            return callback(err)
-          } else {
-            return callback(null)
-          }
-        })
-        return undefined
-      },
-      'it works' (err) {
-        return assert.ifError(err)
-      },
-      'and we generate a client error': {
-        topic (service, slack) {
-          const { callback } = this
-          async.parallel([
-            function (callback) {
-              let pinged = false
-              let to = null
-              slack.once('request', (req, res) => {
-                if (req.url === '/error') {
-                  pinged = true
-                  clearTimeout(to)
-                  return callback(new Error('Was pinged'))
-                }
-              })
-              const checkPinged = function () {
-                if (!pinged) {
-                  return callback(null)
-                }
-              }
-              to = setTimeout(checkPinged, 4000)
-              return to
-            },
-            function (callback) {
-              const options = {
-                url: 'http://localhost:2342/error/400?message=Client+error',
-                headers: {
-                  authorization: `Bearer ${microserviceBatch.appKey}`
-                }
-              }
-              return request.get(options, (err, response, body) => {
-                if (err) {
-                  return callback(err)
-                } else {
-                  const results = JSON.parse(body)
-                  return callback(null, results)
-                }
-              })
             }
-          ], (err) => {
-            if (err) {
-              return callback(err)
-            } else {
-              return callback(null)
-            }
-          })
-          return undefined
+          );
+          return undefined;
         },
-        'it works' (err) {
-          return assert.ifError(err)
+        'it works'(err) {
+          return assert.ifError(err);
+        },
+        'and we generate a client error': {
+          topic(service, slack) {
+            const { callback } = this;
+            async.parallel(
+              [
+                function(callback) {
+                  let pinged = false;
+                  let to = null;
+                  slack.once('request', (req, res) => {
+                    if (req.url === '/error') {
+                      pinged = true;
+                      clearTimeout(to);
+                      return callback(new Error('Was pinged'));
+                    }
+                  });
+                  const checkPinged = function() {
+                    if (!pinged) {
+                      return callback(null);
+                    }
+                  };
+                  to = setTimeout(checkPinged, 4000);
+                  return to;
+                },
+                function(callback) {
+                  const options = {
+                    url: 'http://localhost:2342/error/400?message=Client+error',
+                    headers: {
+                      authorization: `Bearer ${microserviceBatch.appKey}`
+                    }
+                  };
+                  return request.get(options, (err, response, body) => {
+                    if (err) {
+                      return callback(err);
+                    } else {
+                      const results = JSON.parse(body);
+                      return callback(null, results);
+                    }
+                  });
+                }
+              ],
+              err => {
+                if (err) {
+                  return callback(err);
+                } else {
+                  return callback(null);
+                }
+              }
+            );
+            return undefined;
+          },
+          'it works'(err) {
+            return assert.ifError(err);
+          }
         }
       }
-    }
-  })).export(module)
+    })
+  )
+  .export(module);

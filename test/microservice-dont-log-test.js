@@ -12,38 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const vows = require('perjury')
-const {assert} = vows
-const request = require('request')
-const debug = require('debug')('microservice:microservice-dont-log-test')
+const vows = require('perjury');
+const { assert } = vows;
+const request = require('request');
+const debug = require('debug')('microservice:microservice-dont-log-test');
 
-const microserviceBatch = require('./microservice-batch')
+const microserviceBatch = require('./microservice-batch');
 
-process.on('uncaughtException', err => console.error(err))
+process.on('uncaughtException', err => console.error(err));
 
 vows
   .describe('dontLog middleware')
-  .addBatch(microserviceBatch({
-    'and we hit an URL with no logging': {
-      topic () {
-        debug('Called')
-        const { callback } = this
-        debug('Starting request')
-        request.get('http://localhost:2342/health', (err, response, body) => {
-          debug('Finished request')
-          if (err) {
-            return callback(err)
-          } else if ((response != null ? response.statusCode : undefined) !== 200) {
-            return callback(new Error(`Bad status code: ${(response != null ? response.statusCode : undefined)}`))
-          } else {
-            return callback(null)
-          }
-        })
-        return undefined
-      },
-      'it works' (err) {
-        debug('Called test')
-        return assert.ifError(err)
+  .addBatch(
+    microserviceBatch({
+      'and we hit an URL with no logging': {
+        topic() {
+          debug('Called');
+          const { callback } = this;
+          debug('Starting request');
+          request.get('http://localhost:2342/health', (err, response, body) => {
+            debug('Finished request');
+            if (err) {
+              return callback(err);
+            } else if ((response != null ? response.statusCode : undefined) !== 200) {
+              return callback(new Error(`Bad status code: ${response != null ? response.statusCode : undefined}`));
+            } else {
+              return callback(null);
+            }
+          });
+          return undefined;
+        },
+        'it works'(err) {
+          debug('Called test');
+          return assert.ifError(err);
+        }
       }
-    }
-  })).export(module)
+    })
+  )
+  .export(module);
