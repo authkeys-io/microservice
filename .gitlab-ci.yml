@@ -36,8 +36,9 @@ release:
     - tags
   script:
     - npm --version
-    - echo $NPM_TOKEN
+    - echo $NPM_TOKEN>test-me
+    - cat test-me
     - echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}'>.npmrc
-    - if [ ${NPM_TOKEN:0:1} = "v" ]; then npm publish fi
+    - if [ ${CI_COMMIT_TAG:0:1} = "v" ]; then npm publish; fi
   tags:
     - dind
