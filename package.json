@@ -1,6 +1,6 @@
 {
   "name": "@authkeys-io/microservice",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "Simple microservice class used by Authkeys.io",
   "homepage": "http://github.com/fuzzy-ai/microservice",
   "bugs": "https://github.com/fuzzy-ai/microservice/issues",
