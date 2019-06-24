@@ -1,12 +1,13 @@
-# fuzzy.ai-microservice
+# authkeys-io-microservice
 
-This is the microservice class we use for Fuzzy.ai. The goal is to avoid
-re-writing a lot of boilerplate needed to set up an HTTP server and a database
-connection. It has a couple of nice characteristics that make this useful for
+This is a fork of great fuzzy-ai-microservice. We removed databanks dependency and remove callbacks for promises (async/await)
+
+This is the microservice class we use for authkeys.io. The goal is to avoid
+re-writing a lot of boilerplate needed to set up an HTTP server.
+It has a couple of nice characteristics that make this useful for
 us.
 
   - It's configured using environment variables.
-  - It uses [databank](https://github.com/e14n/databank) for data access.
   - It uses [express](http://expressjs.com/) for the web interface.
   - It uses [Bunyan](https://github.com/trentm/node-bunyan) for logging.
 
@@ -15,6 +16,7 @@ We use Docker, so it dumps out its logs to stdout.
 ## License
 
 Copyright 2016 Fuzzy.ai
+Copyright 2019 Authkeys.io
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -35,7 +37,7 @@ example.
 
 ```coffeescript
 
-Microservice = require 'fuzzy.ai-microservice'
+Microservice = require '@authkeys-io/microservice'
 
 # Subclass Microservice
 
@@ -72,18 +74,13 @@ a sub-class. Here are the methods that you should use:
   provided, uses process.env. The environment variables are changed into
   configuration options.
 
-  - `start(callback)`. Start the microservice. `callback` is called with either
-  an `err` argument or `null`.
+  - `start()`. Start the microservice. It returns a promise
 
-  - `stop(callback)`. Stop the microservice. `callback` is called with either an
-  `err` argument or `null`.
+  - `stop()`. Stop the microservice. It returns a promise
 
 ## Methods to overload
 
 These are methods that sub-classes of Microservice should overload.
-
-  - `getSchema()`. Return the Databank schema for the microservice. See
-  <https://github.com/e14n/databank#schemata> for the format.
 
   - `setupMiddleware(exp)`. If you have any custom middleware to set up for the
   express server `exp`, do it here.
@@ -91,14 +88,14 @@ These are methods that sub-classes of Microservice should overload.
   - `setupParams(exp)`. Any custom params would go here. Good place for
   `exp.param()` statements.
 
-  - `setupRoutes(exp)`. All your routes should go here.
+  - `setupRoutes(app, express)`. All your routes should go here.
 
-  - `startCustom(callback)`. If you need to have something happen after starting
+  - `startCustom()`. If you need to have something happen after starting
   the server, do it here. This is a good time for ensuring databank items, for
-  example.
+  example. It returns a promise
 
-  - `stopCustom(callback)`. If you need to do something before stopping (what?),
-  do it here.
+  - `stopCustom()`. If you need to do something before stopping (what?),
+  do it here. It returns a promise
 
   - `environmentToConfig(env)`. Convert the environment to a config object.
 
