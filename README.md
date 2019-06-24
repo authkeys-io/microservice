@@ -1,6 +1,6 @@
 # authkeys-io-microservice
 
-This is a fork of great fuzzy-ai-microservice. We removed databanks dependency and remove callbacks for promises (async/await)
+This is a fork of great fuzzy-ai-microservice. We removed databanks dependency and switched from callbacks to promises (async/await)
 
 This is the microservice class we use for authkeys.io. The goal is to avoid
 re-writing a lot of boilerplate needed to set up an HTTP server.
@@ -15,7 +15,7 @@ We use Docker, so it dumps out its logs to stdout.
 
 ## License
 
-Copyright 2016 Fuzzy.ai
+Copyright 2016 Fuzzy.ai  
 Copyright 2019 Authkeys.io
 
 Licensed under the Apache License, Version 2.0 (the "License");
