@@ -1,6 +1,6 @@
 {
   "name": "@authkeys-io/microservice",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A useful superclass for microservices",
   "homepage": "https://github.com/authkeys-io/microservice",
   "bugs": "https://github.com/authkeys-io/microservice/issues",
