@@ -1,4 +1,4 @@
-# authkeys-io-microservice
+# @authkeys/microservice
 
 This is a fork of great fuzzy-ai-microservice. We removed databanks dependency and switched from callbacks to promises (async/await)
 
@@ -16,7 +16,7 @@ We use Docker, so it dumps out its logs to stdout.
 ## License
 
 Copyright 2016 Fuzzy.ai  
-Copyright 2019 Authkeys.io
+Copyright 2019 AuthKeys srl
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ example.
 
 ```coffeescript
 
-Microservice = require '@authkeys-io/microservice'
+Microservice = require '@authkeys/microservice'
 
 # Subclass Microservice
 

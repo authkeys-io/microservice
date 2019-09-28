@@ -1,9 +1,9 @@
 {
-  "name": "@authkeys-io/microservice",
+  "name": "@authkeys/microservice",
   "version": "2.1.1",
   "description": "A useful superclass for microservices",
-  "homepage": "https://github.com/authkeys-io/microservice",
-  "bugs": "https://github.com/authkeys-io/microservice/issues",
+  "homepage": "https://github.com/authkeys/microservice",
+  "bugs": "https://github.com/authkeys/microservice/issues",
   "license": "Apache-2.0",
   "main": "lib/microservice.js",
   "scripts": {
@@ -39,6 +39,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/authkeys-io/microservice.git"
+    "url": "https://github.com/authkeys/microservice.git"
   }
 }
