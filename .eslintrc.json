@@ -26,11 +26,11 @@
     ]
   },
   "parserOptions": {
-    "ecmaVersion": 2017,
+    "ecmaVersion": 2016,
     "sourceType": "module"
   },
   "env": {
-    "es6": true,
+    "es6": false,
     "node": true
   }
 }
