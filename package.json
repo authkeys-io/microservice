@@ -8,7 +8,6 @@
   "main": "lib/microservice.js",
   "scripts": {
     "test": "true",
-    "test:orig": "perjury test/*-test.js",
     "lint": "eslint lib/*.js test/*.js"
   },
   "files": [
@@ -21,7 +20,7 @@
     "debug": "^3.2.6",
     "express": "^4.17.1",
     "express-prometheus-middleware": "^0.8.4",
-    "request": "^2.83.0",
+    "node-fetch": "^2.6.1",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
@@ -34,10 +33,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
-    "glob": "^7.1.4",
-    "perjury": "^1.1.0",
-    "prettier": "^1.18.2",
-    "yargs-parser": ">=13.1.2"
+    "prettier": "^1.18.2"
   },
   "repository": {
     "type": "git",
