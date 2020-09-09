@@ -36,7 +36,8 @@
     "eslint-plugin-standard": "^4.0.0",
     "glob": "^7.1.4",
     "perjury": "^1.1.0",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "yargs-parser": ">=13.1.2"
   },
   "repository": {
     "type": "git",
